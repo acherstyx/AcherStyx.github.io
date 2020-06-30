@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"acherstyx.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":240,"display":"post","padding":50,"offset":15,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="tf.data用于构建Tensorflow的数据加载。 在tf.data中引入了tf.data.Dataset这样一个抽象来表示一系列的element，每一个元素都由一定的component组成。（如一个图像训练的样本可以看作一个element，其中包含了图像和标签两个component）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tf.data数据加载">
+<meta property="og:url" content="http://acherstyx.github.io/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="tf.data用于构建Tensorflow的数据加载。 在tf.data中引入了tf.data.Dataset这样一个抽象来表示一系列的element，每一个元素都由一定的component组成。（如一个图像训练的样本可以看作一个element，其中包含了图像和标签两个component）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://acherstyx.github.io/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/2020-06-30T161153.png">
+<meta property="og:image" content="http://acherstyx.github.io/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/2020-06-30T161231.png">
+<meta property="og:image" content="http://acherstyx.github.io/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/2020-06-30T161257.png">
+<meta property="article:published_time" content="2020-02-21T08:21:53.000Z">
+<meta property="article:modified_time" content="2020-06-30T16:43:38.410Z">
+<meta property="article:author" content="AcherStyx">
+<meta property="article:tag" content="Machine Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://acherstyx.github.io/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/2020-06-30T161153.png">
+
+<link rel="canonical" href="http://acherstyx.github.io/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>tf.data数据加载 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
+      <meta itemprop="name" content="AcherStyx">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          tf.data数据加载
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-21 16:21:53" itemprop="dateCreated datePublished" datetime="2020-02-21T16:21:53+08:00">2020-02-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-01 00:43:38" itemprop="dateModified" datetime="2020-07-01T00:43:38+08:00">2020-07-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">机器学习 - 数据处理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><code>tf.data</code>用于构建Tensorflow的数据加载。</p>
+<p>在<code>tf.data</code>中引入了<code>tf.data.Dataset</code>这样一个抽象来表示一系列的element，每一个元素都由一定的component组成。（如一个图像训练的样本可以看作一个element，其中包含了图像和标签两个component）</p>
+<a id="more"></a>
+<h2 id="获取数据输入"><a class="markdownIt-Anchor" href="#获取数据输入"></a> 获取数据输入</h2>
+<h3 id="由numpy数组创建"><a class="markdownIt-Anchor" href="#由numpy数组创建"></a> 由NumPy数组创建</h3>
+<p>对于在内存中的数据，使用<code>Dataset.from_tensor_slice</code>是最方便的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">train, test = tf.keras.datasets.fashion_mnist.load_data()</span><br><span class="line">dataset = tf.data.Dataset.from_tensor_slices((images, labels))</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>☆ 上面的创建方式仅适用于小数据集，因为浪费内存。</p>
+</blockquote>
+<h3 id="由python-generator创建"><a class="markdownIt-Anchor" href="#由python-generator创建"></a> 由Python generator创建</h3>
+<p><code>Dataset.from_generator</code>将一个Python generator转换为<code>tf.data.Dataset</code>，它以一个callable作为输入（而非一个iterator）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ds_counter = tf.data.Dataset.from_generator(count,  <span class="comment"># python generator</span></span><br><span class="line">                                            output_types=tf.int32,</span><br><span class="line">                                            args=[<span class="number">25</span>],  <span class="comment"># args for generator</span></span><br><span class="line">                                            output_shapes = (),</span><br><span class="line">                                            )</span><br></pre></td></tr></table></figure>
+<p>在参数列表中：<br />
+<code>args</code>用来提供Python generator初始化所需要的参数。<br />
+<code>output_type</code>必须要指定以确定数据类型。<br />
+<code>output_shape</code>是可选的，但是因为Tensorflow中的部分操作不支持未知的shape因而最好指定。如果shape是可变的或未知，可以定义为<code>None</code>，对于scalar其形状为<code>()</code>。</p>
+<blockquote>
+<p>☆ 使用比较方便，但是需要注意可能会有兼容性、可移植性方面的问题。</p>
+</blockquote>
+<h3 id="由tfrecord创建"><a class="markdownIt-Anchor" href="#由tfrecord创建"></a> 由TFRecord创建</h3>
+<p>使用<code>tf.data.TFRecordDataset</code>来实现从一个或多个TFRecord文件导入数据，只需要提供<code>filenames</code>参数即可，接受单一字符串、字符串列表或者字符型的<code>tf.Tensor</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dataset = tf.data.TFRecordDataset(filenames = [fsns_test_file])</span><br></pre></td></tr></table></figure>
+<p>这样读出来的只是<strong>二进制数据</strong>，通常使用<code>tf.train.Example</code>来序列化存储，对于这样的数据需要进行解码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">raw_example = next(iter(dataset))</span><br><span class="line">parsed = tf.train.Example.FromString(raw_example.numpy())</span><br><span class="line"></span><br><span class="line">parsed.features.feature[<span class="string">'image/text'</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="由text数据创建"><a class="markdownIt-Anchor" href="#由text数据创建"></a> 由text数据创建</h3>
+<p>使用<code>tf.data.TextLineDataset</code>，只需要提供<code>.txt</code>格式的文件路径即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dataset = tf.data.TextLineDataset(file_paths)</span><br></pre></td></tr></table></figure>
+<p>默认的<code>TextLineDataset</code>是逐个文件地给出其中的每一行，使用<code>Dataset.interleave</code>可以在各个文件之间依次切换着输出每一行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">files_ds = tf.data.Dataset.from_tensor_slices(file_paths)</span><br><span class="line">lines_ds = files_ds.interleave(tf.data.TextLineDataset, cycle_length=<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="由csv数据创建"><a class="markdownIt-Anchor" href="#由csv数据创建"></a> 由CSV数据创建</h3>
+<p>对于CSV格式的数据，在加载到内存之后当然也可以使用<code>Dataset.from_tensor_slice</code>来创建<code>Dataset</code>，不过我们更希望能直接从硬盘中读取。<br />
+<code>experimental.make_csv_dataset</code>可以直接读取CSV格式的文件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">titanic_batches = tf.data.experimental.make_csv_dataset(</span><br><span class="line">    titanic_file, batch_size=<span class="number">4</span>,</span><br><span class="line">    label_name=<span class="string">"survived"</span>)  <span class="comment"># survived这一列被额外划分为标签列</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> feature_batch, label_batch <span class="keyword">in</span> titanic_batches.take(<span class="number">1</span>):  <span class="comment"># 返回时，数据和标签会分开返回</span></span><br><span class="line">  print(<span class="string">"'survived': &#123;&#125;"</span>.format(label_batch))</span><br><span class="line">  ...</span><br></pre></td></tr></table></figure>
+<p>另外，<code>select_columns</code>参数可以只把其中需要的几列挑选出来：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">titanic_batches = tf.data.experimental.make_csv_dataset(..., select_columns=[<span class="string">'class'</span>, <span class="string">'fare'</span>, <span class="string">'survived'</span>])</span><br></pre></td></tr></table></figure>
+<p>💊<strong>直接通过这一个函数创建的数据集，label部分是按照标签分开的，需要使用一下方式进行合并！</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pack_features_vector</span><span class="params">(features, labels)</span>:</span></span><br><span class="line">  <span class="string">"""将特征打包到一个数组中"""</span></span><br><span class="line">  features = tf.stack(list(features.values()), axis=<span class="number">1</span>)</span><br><span class="line">  <span class="keyword">return</span> features, labels</span><br></pre></td></tr></table></figure>
+<p>除了这一个函数，还有一个更低级的<a href="https://www.tensorflow.org/api_docs/python/tf/data/experimental/CsvDataset" target="_blank" rel="noopener"><code>experimental.CsvDataset</code></a>，它不支持每一列的自动类型推导，但这也意味着可以手动控制每一列的数据类型，并且第二个参数还可以同时为空缺的数据指定默认值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 依次指定每一列的类型</span></span><br><span class="line">titanic_types  = [tf.int32, tf.string, tf.float32, tf.int32, tf.int32, tf.float32, tf.string, tf.string, tf.string, tf.string]</span><br><span class="line">dataset = tf.data.experimental.CsvDataset(titanic_file, titanic_types , header=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>☆ 从函数名可以看出这一系列都是实验性函数，之后版本的API中可能出现更改。</p>
+</blockquote>
+<h3 id="由一系列文件创建"><a class="markdownIt-Anchor" href="#由一系列文件创建"></a> 由一系列文件创建</h3>
+<p>有时候数据集会以分散在目录里的一系列文件的形式给出，对于这样的数据可以以文件路径作为信息构建数据集，使用<code>Dataset.list_files()</code>函数来构建：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">list_ds = tf.data.Dataset.list_files(str(flowers_root/<span class="string">'*/*'</span>))</span><br></pre></td></tr></table></figure>
+<p>其中每一个element的形式是文件路径：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">b'/home/kbuilder/.keras/datasets/flower_photos/roses/15566697073_9a214b700e_n.jpg'</span></span><br></pre></td></tr></table></figure>
+<hr />
+<h2 id="数据处理"><a class="markdownIt-Anchor" href="#数据处理"></a> 数据处理</h2>
+<h3 id="datasetmap"><a class="markdownIt-Anchor" href="#datasetmap"></a> Dataset.map</h3>
+<p>对于数据处理，一个很重要的变换函数是<code>Dataset.map</code>，它可以将一个指定的函数<code>f</code>应用到数据集中的每一个element上，以实现数据的批量处理。</p>
+<p>在指定的函数<code>f</code>中，可以使用Tensorflow的API，也支持使用其他的Python API来处理数据。<br />
+对于一些使用<code>tf.Train.Example</code>原型来存储的数据，就理所当然的可以应用<code>Dataset.map</code>来对原始数据进行解码。</p>
+<h4 id="通过datasetmap实现图像解码"><a class="markdownIt-Anchor" href="#通过datasetmap实现图像解码"></a> 通过Dataset.map实现图像解码</h4>
+<p>很显然图像的解码可以通过和<code>Dataset.map</code>的配合来实现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 载入原始数据集</span></span><br><span class="line">list_ds = tf.data.Dataset.list_files(str(flowers_root/<span class="string">'*/*'</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 定义实现图片的解码的函数</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parse_image</span><span class="params">(filename)</span>:</span></span><br><span class="line">  parts = tf.strings.split(filename, <span class="string">'/'</span>)</span><br><span class="line">  label = parts[<span class="number">-2</span>]</span><br><span class="line"></span><br><span class="line">  image = tf.io.read_file(filename) <span class="comment"># 读入图片（文本形式）</span></span><br><span class="line">  image = tf.image.decode_jpeg(image) <span class="comment"># 解码成正式的图片数据</span></span><br><span class="line">  image = tf.image.convert_image_dtype(image, tf.float32)</span><br><span class="line">  image = tf.image.resize(image, [<span class="number">128</span>, <span class="number">128</span>])  <span class="comment"># 也提供了resize操作</span></span><br><span class="line">  <span class="keyword">return</span> image, label</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 通过map方法来应用到每一个element上</span></span><br><span class="line">images_ds = list_ds.map(parse_image)</span><br></pre></td></tr></table></figure>
+<h3 id="样本过滤"><a class="markdownIt-Anchor" href="#样本过滤"></a> 样本过滤</h3>
+<p>使用<a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset#skip" target="_blank" rel="noopener"><code>Dataset.skip()</code></a>变换可以跳过开头的几个样本，<a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset#filter" target="_blank" rel="noopener"><code>Dataset.filter()</code></a>可以使用特定的条件对于数据集中的element进行筛选，只需要提供一个判断用的函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">survived</span><span class="params">(line)</span>:</span>     <span class="comment"># 函数定义判断条件，符合条件的时候返回true，保留对应元素</span></span><br><span class="line">  <span class="keyword">return</span> tf.not_equal(tf.strings.substr(line, <span class="number">0</span>, <span class="number">1</span>), <span class="string">"0"</span>)</span><br><span class="line"></span><br><span class="line">survivors = titanic_lines.skip(<span class="number">1</span>).filter(survived)</span><br></pre></td></tr></table></figure>
+<h3 id="时序数据"><a class="markdownIt-Anchor" href="#时序数据"></a> 时序数据</h3>
+<p>对于和时序相关的数据，原始数据是“时间”上连续的，为了构建数据集，我们往往需要以此创建连续的时间切片。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">range_ds = tf.data.Dataset.range(<span class="number">100000</span>)  <span class="comment"># 以range为例</span></span><br></pre></td></tr></table></figure>
+<h4 id="通过batch"><a class="markdownIt-Anchor" href="#通过batch"></a> 通过batch</h4>
+<p>基本思路为：</p>
+<ol>
+<li>先转化为一系列batch，这样每一个element就是一个batch的数据。</li>
+<li>应用<code>Dataset.map</code>来处理每一个batch，分割出输入和输出。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># step 1 变为batch</span></span><br><span class="line">batches = range_ds.batch(<span class="number">10</span>, drop_remainder=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># step 2 通过map来分割，创建出训练数据和标签</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dense_1_step</span><span class="params">(batch)</span>:</span></span><br><span class="line">  <span class="comment"># Shift features and labels one step relative to each other.</span></span><br><span class="line">  <span class="keyword">return</span> batch[:<span class="number">-1</span>], batch[<span class="number">1</span>:]</span><br><span class="line"></span><br><span class="line">predict_dense_1_step = batches.map(dense_1_step)</span><br></pre></td></tr></table></figure>
+<h4 id="通过window"><a class="markdownIt-Anchor" href="#通过window"></a> 通过window</h4>
+<p>使用<code>Dataset.window</code>可以更好地控制这一个过程，但注意这一函数返回的Dataset中element依旧是Dataset。可以利用<code>Dataset.flat_map</code>方法，它要求作为参数的<code>map_func</code>是一个将element转化为Dataset的函数，然后它会将返回的Dataset展开。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">make_window_dataset</span><span class="params">(ds, window_size=<span class="number">5</span>, shift=<span class="number">1</span>, stride=<span class="number">1</span>)</span>:</span></span><br><span class="line">  windows = ds.window(window_size, shift=shift, stride=stride)</span><br><span class="line">  <span class="comment"># shift代表窗口每次滑动的量，而stride代表元素之间的间隔</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">sub_to_batch</span><span class="params">(sub)</span>:</span>  <span class="comment"># 转化为batch，这样之后的处理手法就和上面通过batch的方法一致了</span></span><br><span class="line">    <span class="keyword">return</span> sub.batch(window_size, drop_remainder=<span class="literal">True</span>)</span><br><span class="line">  </span><br><span class="line">  windows = windows.flat_map(sub_to_batch)</span><br><span class="line">  <span class="keyword">return</span> windows</span><br><span class="line"></span><br><span class="line">ds = make_window_dataset(range_ds, window_size=<span class="number">10</span>, shift = <span class="number">5</span>, stride=<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> example <span class="keyword">in</span> ds.take(<span class="number">10</span>):</span><br><span class="line">  print(example.numpy())</span><br><span class="line">  <span class="comment"># [ 0  3  6  9 12 15 18 21 24 27]</span></span><br><span class="line">  <span class="comment"># [ 5  8 11 14 17 20 23 26 29 32]</span></span><br><span class="line">  <span class="comment"># ...</span></span><br><span class="line">  <span class="comment"># [45 48 51 54 57 60 63 66 69 72]</span></span><br></pre></td></tr></table></figure>
+<p>这样就相当于在整一条的数据上使用“滑动窗口”一样的方法，以特定的shift值过了一遍。之后再利用上面的在batch中创建出训练集和标签的方法，即可完成数据集的创建。</p>
+<hr />
+<h2 id="数据输出"><a class="markdownIt-Anchor" href="#数据输出"></a> 数据输出</h2>
+<h3 id="分批量输出"><a class="markdownIt-Anchor" href="#分批量输出"></a> 分批量输出</h3>
+<h4 id="定长数据batch"><a class="markdownIt-Anchor" href="#定长数据batch"></a> 定长数据：batch</h4>
+<p>使用<code>Dataset.batch()</code>可以方便地产生批量数据，约束条件是其中每一个元素都要拥有相同的形状。<br />
+对于输出的批量，在默认的函数设置下是未知的，因为最后一个batch可能是不全的，Tensorflow无法判断所以将其形状设为None。可以使用<code>drop_remainder</code>参数来丢弃最后一个不完全的batch，这样其形状就会固定了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">batched_dataset = dataset.batch(<span class="number">7</span>, drop_remainder=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># &lt;BatchDataset shapes: ((7,), (7,)), types: (tf.int64, tf.int64)&gt;</span></span><br><span class="line"><span class="comment"># 如果drop_remainder设为False则为</span></span><br><span class="line"><span class="comment"># &lt;BatchDataset shapes: ((None,), (None,)), types: (tf.int64, tf.int64)&gt;</span></span><br><span class="line"><span class="comment"># 形状不能确定</span></span><br></pre></td></tr></table></figure>
+<h4 id="不定长数据padded_batch"><a class="markdownIt-Anchor" href="#不定长数据padded_batch"></a> 不定长数据：padded_batch</h4>
+<p>对于不定长的数据，在分批量调用的时候注意使用<code>Dataset.padded_batch</code>而非一般性的<code>Dataset.batch</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ds_series_batch = ds_series.shuffle(<span class="number">20</span>).padded_batch(<span class="number">10</span>,((),(<span class="literal">None</span>,))</span><br><span class="line"></span><br><span class="line">ids, sequence_batch = next(iter(ds_series_batch))</span><br><span class="line">print(ids.numpy())</span><br><span class="line">print()</span><br><span class="line">print(sequence_batch.numpy())</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>☆ padded_batch需要指定形状，在Tensorflow Guide的文章中写错了，没有指定形状。同时形状的描述也很特别，值得考量。<br />
+填充的值可以指定。<br />
+详见API：<a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset#padded_batch" target="_blank" rel="noopener"><code>Dataset.padded_batch</code></a>。</p>
+</blockquote>
+<p>输出形式如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[ <span class="number">2</span> <span class="number">16</span> <span class="number">20</span> <span class="number">10</span>  <span class="number">6</span> <span class="number">14</span> <span class="number">19</span>  <span class="number">9</span> <span class="number">24</span> <span class="number">27</span>]</span><br><span class="line"></span><br><span class="line">[[ <span class="number">0.4466</span>  <span class="number">0.6624</span>  <span class="number">1.4652</span>  <span class="number">0.</span>      <span class="number">0.</span>      <span class="number">0.</span>      <span class="number">0.</span>      <span class="number">0.</span>      <span class="number">0.</span>    ]</span><br><span class="line"> [ <span class="number">0.2223</span> <span class="number">-0.6065</span>  <span class="number">0.5422</span>  <span class="number">0.4195</span>  <span class="number">0.5124</span> <span class="number">-0.5322</span>  <span class="number">0.0428</span>  <span class="number">0.3617</span>  <span class="number">1.5245</span>]</span><br><span class="line"> ...</span><br><span class="line"> [<span class="number">-0.3334</span> <span class="number">-1.0381</span>  <span class="number">1.1201</span> <span class="number">-0.4033</span> <span class="number">-0.6819</span>  <span class="number">0.</span>      <span class="number">0.</span>      <span class="number">0.</span>      <span class="number">0.</span>    ]]</span><br></pre></td></tr></table></figure>
+<h3 id="多epoch重复输出"><a class="markdownIt-Anchor" href="#多epoch重复输出"></a> 多epoch重复输出</h3>
+<p>使用<code>Dataset.repeat()</code>变换可以实现重复枚举数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">titanic_batches = titanic_lines.repeat(<span class="number">3</span>).batch(<span class="number">128</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>无参数的<code>Dataset.repeat()</code>会无限地重复枚举。<br />
+注意<code>repeat</code>和<code>batch</code>的调用顺序会影响输出数据的长度变化（主要因为最后一个batch会不全）:</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">先repeat</th>
+<th style="text-align:center">先batch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><img src="/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/2020-06-30T161153.png" class="" title="2020-06-30T161153"></td>
+<td style="text-align:center"><img src="/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/2020-06-30T161231.png" class="" title="2020-06-30T161231"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="随机化"><a class="markdownIt-Anchor" href="#随机化"></a> 随机化</h3>
+<p><code>Dataset.shuffle()</code>通过维护指定大小的buffer并<strong>从中</strong>随机选取来实现一定程度的随机输出。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dataset = dataset.shuffle(buffer_size=<span class="number">100</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>☆ 对于这样的随机方案，随机的完全性取决于buffer的大小，大的buffer虽然随机性更好但是占用<strong>大量内存</strong>。<br />
+对于随机，先调用<code>repeat</code>或是<code>shuffle</code>也会存在差异：</p>
+<img src="/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/2020-06-30T161257.png" class="" title="2020-06-30T161257">
+</blockquote>
+<hr />
+<h2 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h2>
+<ol>
+<li><a href="https://www.tensorflow.org/guide/data#consuming_csv_data" target="_blank" rel="noopener">tf.data: Build TensorFlow input pipelines | TensorFlow Core</a></li>
+<li><a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset" target="_blank" rel="noopener">tf.data.Dataset | TensorFlow Core</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>AcherStyx
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://acherstyx.github.io/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/" title="tf.data数据加载">http://acherstyx.github.io/2020/02/21/tf-data数据加载/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Machine-Learning/" rel="tag"><i class="fa fa-tag"></i> Machine Learning</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/" rel="next" title="Linux系统恢复记录">
+      Linux系统恢复记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#获取数据输入"><span class="nav-number">1.</span> <span class="nav-text"> 获取数据输入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#由numpy数组创建"><span class="nav-number">1.1.</span> <span class="nav-text"> 由NumPy数组创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#由python-generator创建"><span class="nav-number">1.2.</span> <span class="nav-text"> 由Python generator创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#由tfrecord创建"><span class="nav-number">1.3.</span> <span class="nav-text"> 由TFRecord创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#由text数据创建"><span class="nav-number">1.4.</span> <span class="nav-text"> 由text数据创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#由csv数据创建"><span class="nav-number">1.5.</span> <span class="nav-text"> 由CSV数据创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#由一系列文件创建"><span class="nav-number">1.6.</span> <span class="nav-text"> 由一系列文件创建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据处理"><span class="nav-number">2.</span> <span class="nav-text"> 数据处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#datasetmap"><span class="nav-number">2.1.</span> <span class="nav-text"> Dataset.map</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过datasetmap实现图像解码"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 通过Dataset.map实现图像解码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#样本过滤"><span class="nav-number">2.2.</span> <span class="nav-text"> 样本过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时序数据"><span class="nav-number">2.3.</span> <span class="nav-text"> 时序数据</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通过batch"><span class="nav-number">2.3.1.</span> <span class="nav-text"> 通过batch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过window"><span class="nav-number">2.3.2.</span> <span class="nav-text"> 通过window</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据输出"><span class="nav-number">3.</span> <span class="nav-text"> 数据输出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分批量输出"><span class="nav-number">3.1.</span> <span class="nav-text"> 分批量输出</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#定长数据batch"><span class="nav-number">3.1.1.</span> <span class="nav-text"> 定长数据：batch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不定长数据padded_batch"><span class="nav-number">3.1.2.</span> <span class="nav-text"> 不定长数据：padded_batch</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多epoch重复输出"><span class="nav-number">3.2.</span> <span class="nav-text"> 多epoch重复输出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#随机化"><span class="nav-number">3.3.</span> <span class="nav-text"> 随机化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text"> 参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="AcherStyx"
+      src="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
+  <p class="site-author-name" itemprop="name">AcherStyx</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AcherStyx" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AcherStyx" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/AcherStyx@gmail.com" title="E-Mail → AcherStyx@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AcherStyx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.6' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://acherstyx.github.io/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/',]
+      });
+      });
+  </script>
+
+</body>
+</html>

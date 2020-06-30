@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"acherstyx.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":240,"display":"post","padding":50,"offset":15,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这篇文章的起因是在Windows下的一次分区操作，结果导致了一段悲伤的故事T^T。 不过这一次的系统崩溃还是有不少收获的：  捡回了我的操作系统。 和Linux双系统时，绝对不要在Windows下进行分区操作。 关于Linux分区丢失之后的找回方法（重要）。 启动问题解决途径。  需要注意的是，这篇文章并非是对这一问题的专业解读，只是一个问题解决的思路的整理（思路&gt;问题解决&gt;放置问题）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux系统恢复记录">
+<meta property="og:url" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="这篇文章的起因是在Windows下的一次分区操作，结果导致了一段悲伤的故事T^T。 不过这一次的系统崩溃还是有不少收获的：  捡回了我的操作系统。 和Linux双系统时，绝对不要在Windows下进行分区操作。 关于Linux分区丢失之后的找回方法（重要）。 启动问题解决途径。  需要注意的是，这篇文章并非是对这一问题的专业解读，只是一个问题解决的思路的整理（思路&gt;问题解决&gt;放置问题）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/current-desktop.png">
+<meta property="og:image" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/fdisk.png">
+<meta property="og:image" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/create_new_disk.png">
+<meta property="article:published_time" content="2020-02-22T01:55:34.000Z">
+<meta property="article:modified_time" content="2020-06-30T16:43:38.407Z">
+<meta property="article:author" content="AcherStyx">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/current-desktop.png">
+
+<link rel="canonical" href="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Linux系统恢复记录 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
+      <meta itemprop="name" content="AcherStyx">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux系统恢复记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-02-22 09:55:34" itemprop="dateCreated datePublished" datetime="2020-02-22T09:55:34+08:00">2020-02-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-01 00:43:38" itemprop="dateModified" datetime="2020-07-01T00:43:38+08:00">2020-07-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux-%E6%81%A2%E5%A4%8D/" itemprop="url" rel="index"><span itemprop="name">Linux - 恢复</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这篇文章的起因是在Windows下的一次分区操作，结果导致了一段悲伤的故事T^T。<br />
+不过这一次的系统崩溃还是有不少收获的：</p>
+<ol>
+<li>捡回了我的操作系统。</li>
+<li>和Linux双系统时，绝对不要在Windows下进行分区操作。</li>
+<li>关于Linux分区丢失之后的找回方法（重要）。</li>
+<li>启动问题解决途径。</li>
+</ol>
+<p>需要注意的是，这篇文章并非是对这一问题的专业解读，只是一个问题解决的思路的整理（<strong>思路&gt;问题解决&gt;放置问题</strong>）。</p>
+<p>最终的建议可能是，不要在有双系统的时候，在Windows下进行分区操作，ubuntu的Live CD是个不错的选择，里面一直自带gparted。</p>
+<a id="more"></a>
+<p>放张目前的桌面 😄<br />
+估计可以写一篇美化指南了？？Linux的美化是费时费力的，但收获是成正比的。</p>
+<img src="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/current-desktop.png" class="" title="current-desktop">\
+<h2 id="windows分区会导致的问题"><a class="markdownIt-Anchor" href="#windows分区会导致的问题"></a> Windows分区会导致的问题</h2>
+<p>首先，导致问题的根源在于使用Windows下的软件进行了分区（具体是使用了傲梅分区助手），正常情况在Windows环境下使用这个软件是不会有任何问题的，但是关于Linux系统这一面就不是同一回事了。</p>
+<p>由于这一（但不仅限于）分区软件并不识别所有的分区类型，对于Linux下典型的Ext分区是直接不显示的。</p>
+<blockquote>
+<p>直接显示了未分配，视为了空白空间</p>
+</blockquote>
+<p>要导致Linux下分区消失，根据以往经历，笔者猜测出需要满足这两个条件：</p>
+<ol>
+<li>首先就是<strong>分区不显示</strong>，不能识别这一分区。</li>
+</ol>
+<blockquote>
+<p>理由是隔壁的DiskGenius在我装完Linux后装Windows时也进行了分区操作，但是并没有出现问题，此时DiskGenius是识别了的，只是显示未知分类。</p>
+</blockquote>
+<ol start="2">
+<li><strong>对于分区表进行了改动</strong>，出现了分区的创建、格式化成另一种格式，不包含移动分区。</li>
+</ol>
+<blockquote>
+<p>我这一次问题出现的原因就是把一个Fat32格式的分区格式化成了exFat，但同种格式的格式化预估不会有问题。至于移动分区，在之前也用傲梅分区助手移动过两个ESP分区，但是均没有出现问题。</p>
+</blockquote>
+<h3 id="分区编号的重置"><a class="markdownIt-Anchor" href="#分区编号的重置"></a> 分区编号的重置</h3>
+<p>在使用Windows下的分区软件进行分区编辑之后，在Linux这一边都会遇到同样的一个问题：分区编号变了！</p>
+<p>想必有些许了解就会知道，在linux下分区是标成sda1，sda2，……这样的格式的，但是Windows下倒没有遇到这一概念。问题在于Windows下分区后，这些编号会重置，序号会对因它是磁盘内从头开始的第几个分区，可能直接导致Linux下依赖于此的挂载出现问题。所以尽量使用UUID进行区分吧。</p>
+<h3 id="问题的根源猜测"><a class="markdownIt-Anchor" href="#问题的根源猜测"></a> 问题的根源（猜测）</h3>
+<p>基于个人已有的信息，导致分区消失的根本原因因该是Windows下的分区操作导致了分区表被重写了，而那些未被识别的分区，由于软件根本不识别他们，因而直接在重建的时候跳过了这些分区。这也能解释为什么移动没有问题：修改起止的扇区号即可。<br />
+总之这样导致的分区丢失可以概括成：<strong>分区没事，分区表炸了</strong>。这一点还是十分肯定的。</p>
+<hr />
+<h2 id="分区找回"><a class="markdownIt-Anchor" href="#分区找回"></a> 分区找回</h2>
+<p>既然问题的原因在于分区表被改写后，着一分区没有被纳入到分区表，那么可以送一口气的是：数据没事。毕竟数据没有被覆盖写入，就不会有问题。那问题就在于怎么把分区给补回分区表了，这一操作简单便捷，但是倒没找到什么资料，百度也保持着它的传统……</p>
+<h3 id="问题确认"><a class="markdownIt-Anchor" href="#问题确认"></a> 问题确认</h3>
+<p>分区丢失的症状很明显：重启后引导不了，直接进入了Grub，Windows继续活得蛮滋润。<br />
+在Grub命令行下使用基本的命令可以查看到分区，以此确认分区是否丢失。</p>
+<h3 id="分区修复"><a class="markdownIt-Anchor" href="#分区修复"></a> 分区修复</h3>
+<h4 id="step-1-准备一ubuntu镜像"><a class="markdownIt-Anchor" href="#step-1-准备一ubuntu镜像"></a> Step 1. 准备一Ubuntu镜像</h4>
+<p>要修复分区，首先需要准备一个ubuntu镜像。制作过程很简单，基于UEFI的便捷与强大，只需要创建一个Fat32格式的分区然后把镜像内文件全复制进去，在BIOS的启动菜单里就因该能看到这一启动项了，这一步可以参照网上的装Ubuntu的教程。启动后<strong>选择试用（Try xxx!)</strong>，进入下一步。</p>
+<h4 id="step-2-使用fdisk创建分区"><a class="markdownIt-Anchor" href="#step-2-使用fdisk创建分区"></a> Step 2. 使用fdisk创建分区</h4>
+<p>工具使用fdisk，在Ubuntu下是自带的。其实并不限于Ubuntu，能用fdisk即可完成下面的修复。<br />
+下面截图来自于模拟，在这一次的分区丢失中，我的Swap分区也被删除了，就用它的恢复来做一个例子。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo fdisk /dev/nvme0n1</span><br></pre></td></tr></table></figure>
+<img src="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/fdisk.png" class="" title="fdisk">
+<p>之后使用fdisk在原本分区所在的位置重新创建一个分区即可：</p>
+<img src="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/create_new_disk.png" class="" title="create_new_disk">
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>AcherStyx
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/" title="Linux系统恢复记录">http://acherstyx.github.io/2020/02/22/Linux系统恢复记录/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/" rel="prev" title="tf.data数据加载">
+      <i class="fa fa-chevron-left"></i> tf.data数据加载
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="next" title="Btrfs文件系统">
+      Btrfs文件系统 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#windows分区会导致的问题"><span class="nav-number">1.</span> <span class="nav-text"> Windows分区会导致的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分区编号的重置"><span class="nav-number">1.1.</span> <span class="nav-text"> 分区编号的重置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题的根源猜测"><span class="nav-number">1.2.</span> <span class="nav-text"> 问题的根源（猜测）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区找回"><span class="nav-number">2.</span> <span class="nav-text"> 分区找回</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题确认"><span class="nav-number">2.1.</span> <span class="nav-text"> 问题确认</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分区修复"><span class="nav-number">2.2.</span> <span class="nav-text"> 分区修复</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#step-1-准备一ubuntu镜像"><span class="nav-number">2.2.1.</span> <span class="nav-text"> Step 1. 准备一Ubuntu镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#step-2-使用fdisk创建分区"><span class="nav-number">2.2.2.</span> <span class="nav-text"> Step 2. 使用fdisk创建分区</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="AcherStyx"
+      src="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
+  <p class="site-author-name" itemprop="name">AcherStyx</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AcherStyx" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AcherStyx" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/AcherStyx@gmail.com" title="E-Mail → AcherStyx@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AcherStyx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.6' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/',]
+      });
+      });
+  </script>
+
+</body>
+</html>
