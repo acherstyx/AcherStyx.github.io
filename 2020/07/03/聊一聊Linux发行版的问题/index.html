@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"acherstyx.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":240,"display":"post","padding":50,"offset":15,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Linux的发行版本问题一直都是一个比较有争议的领域，也由此产生了一些不同的派别（试图引起派系斗争），不过我个人在体验了不少发行版之后倒是觉得发行版并不见的那么重要。可能真的到了一定程度，这种差异会消失，毕竟那些大佬都有能力自己组自己的Linux，有内核就行，还考虑啥发行版呢。( ´◔ ‸◔&#39;) 本是同根生（指内核），相煎何太急～ 所以，大家不如放弃偏见，团结一致，珍爱生命，远离ubuntu。(╯">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊一聊Linux发行版的问题">
+<meta property="og:url" content="http://acherstyx.github.io/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="Linux的发行版本问题一直都是一个比较有争议的领域，也由此产生了一些不同的派别（试图引起派系斗争），不过我个人在体验了不少发行版之后倒是觉得发行版并不见的那么重要。可能真的到了一定程度，这种差异会消失，毕竟那些大佬都有能力自己组自己的Linux，有内核就行，还考虑啥发行版呢。( ´◔ ‸◔&#39;) 本是同根生（指内核），相煎何太急～ 所以，大家不如放弃偏见，团结一致，珍爱生命，远离ubuntu。(╯">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-07-02T23:06:32.000Z">
+<meta property="article:modified_time" content="2020-07-03T05:45:31.235Z">
+<meta property="article:author" content="AcherStyx">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://acherstyx.github.io/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>聊一聊Linux发行版的问题 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
+      <meta itemprop="name" content="AcherStyx">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          聊一聊Linux发行版的问题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-03 07:06:32 / 修改时间：13:45:31" itemprop="dateCreated datePublished" datetime="2020-07-03T07:06:32+08:00">2020-07-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%BC%E5%90%88/" itemprop="url" rel="index"><span itemprop="name">综合</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Linux的发行版本问题一直都是一个比较有争议的领域，也由此产生了一些不同的派别（试图引起派系斗争），不过我个人在体验了不少发行版之后倒是觉得发行版并不见的那么重要。可能真的到了一定程度，这种差异会消失，毕竟那些大佬都有能力自己组自己的Linux，有内核就行，还考虑啥发行版呢。<code>( ´◔ ‸◔')</code></p>
+<p>本是同根生（指内核），相煎何太急～</p>
+<p>所以，大家不如放弃偏见，团结一致，珍爱生命，远离ubuntu。<code>(╯°Д°）╯︵ /(.□ . \)</code></p>
+<p>给个大纲：</p>
+<ul>
+<li>我的Linux简史（闲谈）</li>
+<li>发行版问题
+<ul>
+<li>一些体验一致的地方</li>
+<li>一些体验不一致的地方</li>
+</ul>
+</li>
+<li>具体谈几个发行版本的使用经历</li>
+</ul>
+<a id="more"></a>
+<h2 id="我的linux简史"><a class="markdownIt-Anchor" href="#我的linux简史"></a> 我的Linux简史</h2>
+<p>先来闲聊一下吧～不知道有没有人也有类似的经历呢～</p>
+<p>从高中第一次接触Linux开始，直至今日已经尝试了不少的Linux发行版本。最早接触的发行版自然是ubuntu，毕竟它在国内的热度还是比较高的。</p>
+<p>当时只是抱着玩一玩的心态，也可能是反复装Windows玩腻了。在上手后不久又出于某些原因开始学着部署OwnCloud，那个时候的部署方案还是Apache，照着网上的各种教程一点点地试错，还真的整出来了，这可能也是我早期Debug和资料搜索经验的由来。不过没想到的是我现在都还在用这么套云存储，虽然已经更迭到了Nextcloud，变为了Docker部署，还增添了许多性能优化，但是还是原本那个熟悉的环境，熟悉的流程。</p>
+<p>之后则开始接触openSUSE，原因已经不得而知，但作为一个对于开发一无所知的萌新来讲，用Linux不过也只是玩玩。但那时候也熟悉了LEAP和Tumbleweed两个发行版，算是打了个基础吧。</p>
+<p>真正正式接触到Linux则是到了大学，而我开始将Linux当作日用也仅仅只是仅半年的事情。由于经常接触软件的开发，在Linux环境下往往能更快地获得一个稳定、高效的开发环境，并且不容易遇到各种各样的奇葩又难以解决的兼容性问题，因此Linux的使用比例也越来越高。处于稳定性的需要，在这个时候开始接触起CentOS。当然CentOS固然老旧，但是稳定性的确不错，没有ubuntu里莫名其妙的Bug，防火墙也一应俱全（ufw？相比起来我觉得ufw设置的GUI过于鸡肋）。</p>
+<p>但Linux的问题也是很明显的：硬件兼容性。换到了硬件层面，即使已经在大学学习了一点基础，也瞬间只能用一个字来形容——菜。硬件的兼容问题根本不是个人能够解决的，至少对于我这样刚入门的人来说根本无从下手。最突出的当属显示问题，有些是显卡驱动导致，有些则是应用程序、桌面启动器等的兼容性导致，当然也有许多我不知道的原因，那些问题就属于至今都还没解决的问题了。</p>
+<p>所以如果想装Linux，买电脑前就应该调查好兼容性问题。</p>
+<p>什么？虚拟机？那当我没说。</p>
+<p>对于我来说是准备日用的，日常开个虚拟机，简直是作死。</p>
+<h2 id="发行版问题"><a class="markdownIt-Anchor" href="#发行版问题"></a> 发行版问题</h2>
+<p>差不多回归主题（想起标题了）。</p>
+<p>用了一圈的发行版，最大的感受是：都一样。</p>
+<p>事实上如果是纯粹的开发，任何Linux发行版本几乎都一样（至少在我所涉及到的范围之内），无非是安装方式的差距。如果一个开发已经需要依赖于某一个发行版本，换一个发行版就无法工作的话，这一个软件本身可能就是有问题的。</p>
+<p>以OpenDayLight控制器为例，本来我们项目使用了从ODL官网下载的编译好的控制器版本，但是这一个控制器在ubuntu上各种报错，而换到CentOS就没有报错了。起初我认为是ubuntu不稳定的问题，但是后来继续实验还是出了问题。最终的解决方案是使用Maven从源码构建，这一版本的控制器用来配置SFC才是功能正常的，所以这锅并不在于ubuntu。</p>
+<p>不过这种开发实际上比较特殊，也是我遇到的唯一一起发行版之间有实际差异的特例。更多情况下，我感受到的是一致性。</p>
+<h3 id="发行版一致"><a class="markdownIt-Anchor" href="#发行版一致"></a> 发行版一致</h3>
+<h4 id="包管理大同小异"><a class="markdownIt-Anchor" href="#包管理大同小异"></a> 包管理大同小异</h4>
+<p>在各个发行版之前切换，最大的变化在与包管理系统可能不一样，但是实际上都类似。指令从<code>apt</code>到<code>zypper</code>，再到<code>yum</code>、<code>pacman</code>，命令在变参数在变，但做的都是类似的工作，常用的软件也还是可以在源里面找到。无非像CentOS这样的守旧派版本过于古老，但是从源码编译安装是一项基本的本领，Google一下源项目（基本在Github上），编译安装就是。</p>
+<h4 id="snap与flatpak"><a class="markdownIt-Anchor" href="#snap与flatpak"></a> snap与flatpak</h4>
+<p>另外一个减弱对于发行版本的依赖的则是<code>snap</code>和<code>flatpak</code>的兴起。其中我自然是更加倾向于<code>flatpak</code>，<code>snap</code>毕竟长期服务于ubuntu，如果<code>snap</code>排斥其他发行版开始闭门造车，我想我会毫不犹豫地抛弃它。这类工具最大的特点即是跨发行版，原本的目的就在于另软件可以运行于任意发行版本之上，为此付出的代价是占用更多的存储空间（真的不是一般地大，到头来不同平台的包一多，可能会占据系统存储的半壁江山，但是这部分也就牺牲10～20GB不等，如今也还可以接受）。常用的一些软件在上面都有发布，如今越来越多的应用也在增加这一发布方式。</p>
+<h4 id="docker"><a class="markdownIt-Anchor" href="#docker"></a> Docker</h4>
+<p>Docker：你宿主是啥发行版，管我容器什么事情？</p>
+<p>另一个因素则是<code>docker</code>的运用。在我看来如果你真的熟悉一个服务的部署，那将他转移到Docker上应该是一件轻而易举的事情，因为它本质就是一个类似Shell脚本的存在。仅考虑数据的存储，而通过Docker完全忽略发行版本之类的问题、再部署问题，不用为哪一天系统崩了、云主机到期不想续费了而丢失已经配好的系统服务而发愁，夸张点说真的是一劳永逸的事情。</p>
+<h3 id="发行版差异性"><a class="markdownIt-Anchor" href="#发行版差异性"></a> 发行版差异性</h3>
+<h4 id="更新频率"><a class="markdownIt-Anchor" href="#更新频率"></a> 更新频率</h4>
+<p>每天刷新软件源都能有更新，从头到尾都是船新版本，这样的Linux你喜欢吗？</p>
+<p>这就是典型的openSUSE Tumbleweed的更新模式了。求稳定肯定还是LEAP，更新少，一般只做一些安全更新，至少我所使用的经历中几个礼拜下来都不会有啥大的更新。</p>
+<p>很多发行版本在更新上是由区别的，有的软件包太老（典型的例子就是CentOS，但是它就应该拿来跑跑服务，本来的目标、服务群体就不一样），有的又太新，导致可能不稳定。更新周期以及软件版本之类的一般都会有发布，在<a href="https://distrowatch.com/" target="_blank" rel="noopener"><br />
+DistroWatch</a>上往往能够找到最新的消息。一个最为核心的问题可能是内核版本，特别是有些硬件（比如我使用的AX200网卡），对于内核版本有要求，太早的不能驱动。</p>
+<h4 id="桌面环境"><a class="markdownIt-Anchor" href="#桌面环境"></a> 桌面环境</h4>
+<p>要说各个发行版间的不同，桌面环境可能是最大的了。各个发行版本默认支持的桌面版本是不同的，如ubuntu就仅官方支持一个Gnome，而openSUSE则支持多个桌面环境，不过个人认为重点还是在KDE的支持上。一般官方支持的桌面环境的兼容性会更好，遇到各种问题的可能性也比较少。</p>
+<p>另外一个很常见的衍生问题是系统的睡眠、休眠问题，很多时候硬件的不兼容会在这里有所体现，可能出现不能睡眠、睡眠后无法唤醒等各类匪夷所思的情况，这也是我目前面临的主要问题，所以要测试一台新买的笔记本的硬件是否和Linux兼容较好，可以从这里开始。</p>
+<h4 id="社区"><a class="markdownIt-Anchor" href="#社区"></a> 社区</h4>
+<p>这一个问题在国内很大程度受到了语言的限制……国内的很多教程或问题的解决，亦或是软件、服务的安装部署教程，直指的发行版就是ubuntu，所以现实就是一般问题在ubuntu下更容易找到中文的解决方案。当然如果你英语不错，也会使用英语来搜索关键字，那这一问题会得到一定的缓解。有些发行版本虽然国内不温不火，甚至于冷门，但在国外可能还是很活跃的，一定要正视这一个社区环境的差异。</p>
+<h3 id="分析几个发行版的具体使用体会"><a class="markdownIt-Anchor" href="#分析几个发行版的具体使用体会"></a> 分析几个发行版的具体使用体会</h3>
+<h4 id="opensuse-最强btrfs支持"><a class="markdownIt-Anchor" href="#opensuse-最强btrfs支持"></a> openSUSE - 最强Btrfs支持</h4>
+<p>openSUSE可以说是比较正统的几个Linux发行版中我最为喜欢的一个了，虽然实际上的使用体验可能和切换到fedora这样同样的rpm系发行版会很类似，但是openSUSE也有着自己的亮点。</p>
+<p>最重要的我觉得还是<strong>完整的Btrfs支持</strong>。我相信openSUSE有着所有Linux发行版里面最好的Btrfs支持，最重要的是一切都是开箱即用的。Btrfs的快照备份对于爱折腾的人来说尤为重要，这一点可以参照之前的博客，对Btrfs有比较详尽的介绍。使用Btrfs快照备份十分迅速，并且通过配置snapper（这个也是默认自带的）就可以设置定时备份、定时清理旧快照，一切都组织有序。在使用zypper（openSUSE的包管理命令）安装软件包的时候也会自动创建快照。更为重要的是启动的时候就可以选择从已有的某一个快照中以只读形式启动，这样随时都可以恢复到之前的某一个状态，如果你检查了下这一个快照下运行正常，你就可以通过rollback恢复到当前的快照，十分快速地从系统问题中恢复。</p>
+<p>另一点则是Yast，Yast的确是一个十分便捷的工具，也受到很多人追捧（估计维护人员居多），不过个人而言并没有感觉到它是多么地不可替代，不过有一个集成的配置中心的确感到很便捷。</p>
+<p>openSUSE是有LEAP和Tumbleweed两个版本的，LEAP十分稳定，但是包也完全不陈旧，可以说是十分适中的一个存在。Tumbleweed的滚动更新也蛮吸引人，但是更新频率有点过于频繁。由于有快照的加持，即使Tumbleweed更新较为激进，但是也基本不用担心系统滚挂，可以说openSUSE便捷且开箱即用的快照支持是Tumbleweed用户的一颗定心丸。</p>
+<p>在国内使用openSUSE有一个很大的问题：镜像。openSUSE的总镜像是在德国的（本来就是源于德国的发行版），并且借助metalink技术，使得即使从总镜像更新，在下载的时候也会使用本地就近的镜像进行加速。这一模式理论上很美好，但是实际上和总镜像的链接经常被墙或者速度缓慢，所以更新速度十分令人着急，所以迫不得已还是需要使用镜像。问题是有些源没有镜像，还不得不从官方获取，所以网差的时候可能根本无法更新这些软件源，可以说十分劝退。</p>
+<h4 id="manjaro-背靠arch"><a class="markdownIt-Anchor" href="#manjaro-背靠arch"></a> Manjaro - 背靠Arch</h4>
+<p>Manjaro是我目前的主力系统。让我留恋于这一个系统的主要原因是来自Arch一侧的社区所带来的众多软件包，其中AUR占据了十分重要的地位。</p>
+<p>或许是在尝试了众多发行版本之后本身也觉得没什么意思，所以我更倾向于寻找一个满足日用要求的（当然这个日用其实包括了很多开发环境），便捷的系统，而Manjaro真的适合思想逐渐佛系的我。软件安装方便，基本AUR中都有你想要的，也不需要折腾，感谢这些dalao的维护想要的软件基本已经准备好了。另外Manjaro的内核管理也比较方便，通过GUI可以随意切换内核。从寻找桌面操作系统的角度，Manjaro是一个不错的选择。</p>
+<p>在Manjaro上使用Btrfs，你需要使用timeshift（自带，而非openSUSE中的snapper）进行日常的备份操作。timeshift虽然也不差，但是Manjaro并不自带从快照中启动的功能，所以我往往是进单用户模式去回滚。</p>
+<p>Manjaro还有的一点优势是相较于其他派系的延伸版本，比如从Debian和ubuntu之间的差异，Arch和Manjaro的差异还是不大的，给人的使用体验和带了桌面的Arch没啥太大的不同（当然我目前还没使用过Arch，但是教程普遍通用，相较于别的派生关系，这个通用性蛮高了）。众所周知，Arch的Wiki里啥都有，背靠着Arch的社区也是令我选择它的一个重要原因。</p>
+<p>但是个人觉得，使用Arch系会有一个问题：没有对应的Server。如果你用fedora，可能很容易和RedHat或者CentOS对应起来，这样用起服务器来的连贯性还是很好的。但是Arch就缺乏这样一个对应，我所了解的范围内，用Arch作为服务器的公司应该是少数，一些云服务器也不提供这一镜像。</p>
+<h4 id="centos-默默无闻但坚实的后台"><a class="markdownIt-Anchor" href="#centos-默默无闻但坚实的后台"></a> CentOS - 默默无闻但坚实的后台</h4>
+<p>我的所有云服务器，无脑CentOS。一是相信它的稳定性（虽然稳定性这种东西，真的用起来就是玄学，还真没怎么感受到），二是习惯问题，用多了再部署起来就不用查太多资料。因为和RedHat对应，在各类服务的部署方面的教程比较丰富和完整。而作为一个服务部署的宿主机，因为我为了复用，大部分的服务都制作成了Docker，所以CentOS的包即使再老旧，对我的影响也不会太大。</p>
+<h4 id="ubuntu-一言难尽"><a class="markdownIt-Anchor" href="#ubuntu-一言难尽"></a> ubuntu - 一言难尽</h4>
+<p>说起ubuntu心情蛮复杂的，虽然实际用起来跟我的总体认知一样：同为Linux用起来能差多少。但是因为ubuntu的公司风评不好，导致我时不时不免还是有些怀疑：这个程序为什么有问题，会不会是发行版的问题？（当然这种“发行版的问题”也包括某一发行版本的配置方式比较特殊，需要按照专门的教程）。</p>
+<p>总之结果就是心理上还是不会优先考虑ubuntu。另一个原因可能更加现实一点：我需要KDE环境，但是ubuntu没有正式以KDE作为发行版。我知道有Kubuntu和KDE neon，但是非官方支持的桌面兼容性、稳定性还是值得商榷的。</p>
+<p>至于作为服务器不使用它则是出于防火墙方面ufw鸡肋的缘故，firewalld配置起来还是更加合理且灵活些。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>AcherStyx
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://acherstyx.github.io/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/" title="聊一聊Linux发行版的问题">http://acherstyx.github.io/2020/07/03/聊一聊Linux发行版的问题/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/" rel="prev" title="KDE桌面美化指南 Part 1">
+      <i class="fa fa-chevron-left"></i> KDE桌面美化指南 Part 1
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#我的linux简史"><span class="nav-number">1.</span> <span class="nav-text"> 我的Linux简史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发行版问题"><span class="nav-number">2.</span> <span class="nav-text"> 发行版问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#发行版一致"><span class="nav-number">2.1.</span> <span class="nav-text"> 发行版一致</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#包管理大同小异"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 包管理大同小异</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#snap与flatpak"><span class="nav-number">2.1.2.</span> <span class="nav-text"> snap与flatpak</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#docker"><span class="nav-number">2.1.3.</span> <span class="nav-text"> Docker</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发行版差异性"><span class="nav-number">2.2.</span> <span class="nav-text"> 发行版差异性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#更新频率"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 更新频率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#桌面环境"><span class="nav-number">2.2.2.</span> <span class="nav-text"> 桌面环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#社区"><span class="nav-number">2.2.3.</span> <span class="nav-text"> 社区</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析几个发行版的具体使用体会"><span class="nav-number">2.3.</span> <span class="nav-text"> 分析几个发行版的具体使用体会</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#opensuse-最强btrfs支持"><span class="nav-number">2.3.1.</span> <span class="nav-text"> openSUSE - 最强Btrfs支持</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#manjaro-背靠arch"><span class="nav-number">2.3.2.</span> <span class="nav-text"> Manjaro - 背靠Arch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#centos-默默无闻但坚实的后台"><span class="nav-number">2.3.3.</span> <span class="nav-text"> CentOS - 默默无闻但坚实的后台</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ubuntu-一言难尽"><span class="nav-number">2.3.4.</span> <span class="nav-text"> ubuntu - 一言难尽</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="AcherStyx"
+      src="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
+  <p class="site-author-name" itemprop="name">AcherStyx</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AcherStyx" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AcherStyx" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/AcherStyx@gmail.com" title="E-Mail → AcherStyx@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AcherStyx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.6' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://acherstyx.github.io/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/',]
+      });
+      });
+  </script>
+
+</body>
+</html>
