@@ -157,6 +157,83 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/07/07/Systemd%E6%9C%8D%E5%8A%A1%E8%84%9A%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
+      <meta itemprop="name" content="AcherStyx">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/07/Systemd%E6%9C%8D%E5%8A%A1%E8%84%9A%E6%9C%AC/" class="post-title-link" itemprop="url">Systemd服务脚本</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-07 02:13:11 / 修改时间：02:20:09" itemprop="dateCreated datePublished" datetime="2020-07-07T02:13:11+08:00">2020-07-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="序"><a class="markdownIt-Anchor" href="#序"></a> 序</h2>
+<p>现在大多数发行版已经切换到了使用systemd进行服务管理，原本的service已经逐渐被废弃。</p>
+<p>这次来整理下systemd下服务脚本的写法。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/07/07/Systemd%E6%9C%8D%E5%8A%A1%E8%84%9A%E6%9C%AC/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -180,10 +257,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-07-03 07:06:32 / 修改时间：13:45:31" itemprop="dateCreated datePublished" datetime="2020-07-03T07:06:32+08:00">2020-07-03</time>
+              <time title="创建时间：2020-07-03 07:06:32" itemprop="dateCreated datePublished" datetime="2020-07-03T07:06:32+08:00">2020-07-03</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-07 02:11:34" itemprop="dateModified" datetime="2020-07-07T02:11:34+08:00">2020-07-07</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -276,7 +359,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-01 01:18:20" itemprop="dateModified" datetime="2020-07-01T01:18:20+08:00">2020-07-01</time>
+                <time title="修改时间：2020-07-07 02:11:34" itemprop="dateModified" datetime="2020-07-07T02:11:34+08:00">2020-07-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -361,7 +444,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-01 00:43:38" itemprop="dateModified" datetime="2020-07-01T00:43:38+08:00">2020-07-01</time>
+                <time title="修改时间：2020-07-07 02:11:34" itemprop="dateModified" datetime="2020-07-07T02:11:34+08:00">2020-07-07</time>
               </span>
 
           
@@ -434,7 +517,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-01 00:43:38" itemprop="dateModified" datetime="2020-07-01T00:43:38+08:00">2020-07-01</time>
+                <time title="修改时间：2020-07-07 02:11:34" itemprop="dateModified" datetime="2020-07-07T02:11:34+08:00">2020-07-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -524,7 +607,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-01 00:43:38" itemprop="dateModified" datetime="2020-07-01T00:43:38+08:00">2020-07-01</time>
+                <time title="修改时间：2020-07-07 02:11:34" itemprop="dateModified" datetime="2020-07-07T02:11:34+08:00">2020-07-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -639,14 +722,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

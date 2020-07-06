@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"acherstyx.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":240,"display":"post","padding":50,"offset":15,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="序 现在大多数发行版已经切换到了使用systemd进行服务管理，原本的service已经逐渐被废弃。 这次来整理下systemd下服务脚本的写法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Systemd服务脚本">
+<meta property="og:url" content="http://acherstyx.github.io/2020/07/07/Systemd%E6%9C%8D%E5%8A%A1%E8%84%9A%E6%9C%AC/index.html">
+<meta property="og:site_name">
+<meta property="og:description" content="序 现在大多数发行版已经切换到了使用systemd进行服务管理，原本的service已经逐渐被废弃。 这次来整理下systemd下服务脚本的写法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-07-06T18:13:11.000Z">
+<meta property="article:modified_time" content="2020-07-06T18:20:09.715Z">
+<meta property="article:author" content="AcherStyx">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://acherstyx.github.io/2020/07/07/Systemd%E6%9C%8D%E5%8A%A1%E8%84%9A%E6%9C%AC/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Systemd服务脚本 | </title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title"></h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/07/07/Systemd%E6%9C%8D%E5%8A%A1%E8%84%9A%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
+      <meta itemprop="name" content="AcherStyx">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Systemd服务脚本
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-07-07 02:13:11 / 修改时间：02:20:09" itemprop="dateCreated datePublished" datetime="2020-07-07T02:13:11+08:00">2020-07-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="序"><a class="markdownIt-Anchor" href="#序"></a> 序</h2>
+<p>现在大多数发行版已经切换到了使用systemd进行服务管理，原本的service已经逐渐被废弃。</p>
+<p>这次来整理下systemd下服务脚本的写法。</p>
+<a id="more"></a>
+<h2 id="路径"><a class="markdownIt-Anchor" href="#路径"></a> 路径</h2>
+<p>systemctl的脚本存储在以下两个路径中：</p>
+<ul>
+<li>
+<p><code>/usr/lib/systemd/system</code>： 系统服务，运行具有管理员权限。</p>
+</li>
+<li>
+<p><code>/usr/lib/systemd/user</code>：用户服务，只有在用户登陆之后才开始运行。</p>
+</li>
+</ul>
+<p>一般自定义的服务都以<code>*.service</code>结尾，存放在<code>/usr/lib/systemd/system</code>中即可，另一个使用比较少。</p>
+<h2 id="脚本结构"><a class="markdownIt-Anchor" href="#脚本结构"></a> 脚本结构</h2>
+<p>一个服务脚本由三个部分组成：<code>[Unit]</code>、<code>[Service]</code>和<code>[Install]</code>。</p>
+<ul>
+<li><code>[Unit]</code>：主要包含服务的说明。</li>
+<li><code>[Service]</code>：定义了服务的主要内容（核心）。</li>
+<li><code>[Install]</code>：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">[Service]  </span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">[Install]   </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h2 id="参数字段"><a class="markdownIt-Anchor" href="#参数字段"></a> 参数字段<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></h2>
+<h3 id="unit"><a class="markdownIt-Anchor" href="#unit"></a> [Unit]</h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description&#x3D;test	# 对于服务的说明文本</span><br><span class="line">After&#x3D;network.target	# 表示服务需要在哪些服务之后启动</span><br><span class="line">Before&#x3D;xxx.service		# 表示服务需要在哪些服务之前启动</span><br><span class="line">Requires&#x3D;xxx.service	# 表明服务之间的强依赖关系</span><br><span class="line">Wants&#x3D;xxx.service		# 表示服务之间的弱依赖关系</span><br></pre></td></tr></table></figure>
+<p><strong>Requires - 强依赖</strong></p>
+<p>在当前服务启动的时候，Requires列表下的服务也会被一起启动；如果Requires列表下某一个服务被停止，或者启动失败了，这一个服务也会被同时停止。所以Requires会产生很强的依赖关系。</p>
+<p>Requires不能保证服务之间执行的顺序，当前服务和Requires中的服务可能同时被激活运行。</p>
+<blockquote>
+<p>i.e. If a unit foo.service requires a unit bar.service as configured with Requires= and no ordering is configured with After= or Before=, then both units will be started simultaneously and without any delay between them if foo.service is activated.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+<p>在foo.service中定义了Requires=bar.service，表明foo.service依赖于bar.service，但是在启动的时候foo.service和bar.service完全可能同时开始运行，中间没有任何延迟。</p>
+</blockquote>
+<p>所以如果foo.service中定义了Requires=bar.service，启动的过程应该如下：</p>
+<ol>
+<li>检查<code>bar.service</code>是否启动。</li>
+<li>如果<code>bar.service</code>没有启动，则启动bar.service。</li>
+<li>如果<code>bar.service</code>已经启动（或经由2启动了），则可以启动<code>foo.service</code>。</li>
+<li>如果在<code>foo.service</code>运行过程中<code>bar.service</code>终止了，则同时终止<code>foo.service</code>。</li>
+<li>反过来<code>bar.service</code>终止了，对<code>foo.service</code>没有影响。</li>
+</ol>
+<p><strong>Wants - 弱依赖</strong></p>
+<p>Wants的行为介于Requires和After之间。在一个服务被启动的时候，Wants列表下的服务也会被启动，但和Requires的区别是Wants下的服务即使启动失败、或者运行中出现了问题，也不会反过来影响当前服务的继续执行，因此被作为弱依赖。</p>
+<p><strong>After和Before</strong></p>
+<p>两者可以保证服务之间启动的顺序性，定义之后可以保证服务在某一个服务启动之后/之前启动。和Requires不同的是，After不会产生依赖关系，所以虽然在启动的时候要求After列表中的服务先启动，但是之后即使After列表中某一个服务停止了，当前服务也依然会继续运行。</p>
+<p>注意在服务终止的时候，会依照相反的顺序终止。</p>
+<blockquote>
+<p>i.e. if a unit is configured with After= on another unit, the former is stopped before the latter if both are shut down.</p>
+<p>如果foo.service中设定了After=bar.service，则在两个一起被终止的时候，foo.service会先于bar.service终止。</p>
+</blockquote>
+<p>比阿另外如果两个服务存在着After或Before中任意的关系，在一个服务被shutdown而同时另一个服务在start的时候，shutdown永远先执行。而当没有After或Before的时候，会是同时的。</p>
+<p>同样的在foo.service中定义了After=bar.service，形式化描述这一个启动过程应该是这样的：</p>
+<ol>
+<li>检查<code>foo.service</code>是否启动。</li>
+<li>如果<code>foo.service</code>启动了，则可以启动<code>bar.service</code>。</li>
+<li>如果<code>foo.service</code>没有启动 ，则一直等待。</li>
+<li>如果在<code>bar.service</code>或<code>foo.service</code>都启动了之后，某一方出现问题终止了，则都不会影响另一方。</li>
+</ol>
+<h3 id="service"><a class="markdownIt-Anchor" href="#service"></a> [Service]</h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">Type&#x3D;forking	# 代表了服务的运行模式</span><br><span class="line">User&#x3D;user		# 用户</span><br><span class="line">Group&#x3D;user		# 用户组</span><br><span class="line">KillMode&#x3D;control-group	# 指定systemd在停止服务时该怎么做</span><br><span class="line">PIDFile&#x3D;&#x2F;usr&#x2F;local&#x2F;test&#x2F;test.pid	# 提供pid文件的绝对路径</span><br><span class="line">Restart&#x3D;always		# 重启规则</span><br><span class="line">RestartSec&#x3D;10		# 重启之前等待的秒数</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;test&#x2F;bin&#x2F;startup.sh	# 执行内容</span><br><span class="line">PrivateTmp&#x3D;true		# 分配独立的临时空间</span><br></pre></td></tr></table></figure>
+<p><strong>Type - 运行模式</strong><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
+<p>运行模式的关键词和效果主要有以下这些：</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>simple</td>
+<td>默认值。使用这一类型会使得systemd认为你的服务不会fork，所以认为服务是立即执行的，当前进程的结束即代表了整个服务程序结束运行，会识别为退出状态。所以这一类型适合于那些只有单进程，会持续运行直至主进程退出的程序。<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></td>
+</tr>
+<tr>
+<td>forking</td>
+<td>一般服务都是使用这一个类型。这一模式下systemd会认为当前的服务会进行fork，所以主进程的退出不一定就意味着整个服务已经结束，因为服务可能作为子进程在后台正常运行着。使用这一类型应该同时指定<code>PIDFile=</code>，以便systemd能够跟踪主进程。</td>
+</tr>
+<tr>
+<td>oneshot</td>
+<td>适用于只需要执行一次的服务、随后立即退出的服务。另外为了让systemd在服务退出之后仍然认为服务处于激活状态，需要同时设置，<code>RemainAfterExit=yes</code>。</td>
+</tr>
+<tr>
+<td>notify</td>
+<td>和simple相同，除了约定在服务就绪之后会向systemd发送一个信号，通知的实现由 <a href="http://libsystemd-daemon.so" target="_blank" rel="noopener">libsystemd-daemon.so</a> 提供。</td>
+</tr>
+<tr>
+<td>dbus</td>
+<td>使用这一方式启动的时候，systemd通过指定的<code>BusName</code>是否出现在了<code>DBus</code>总线上来判断服务是否就绪。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>User和Group - 执行身份</strong></p>
+<p>指定服务运行的用户和用户组。</p>
+<p><strong>KillMode - 如何停止</strong></p>
+<p>（待补充）</p>
+<p><strong>Restart - 重启规则</strong></p>
+<p>决定了服务以怎样的模式重新启动。</p>
+<table>
+<thead>
+<tr>
+<th>Restart</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>no</td>
+<td>默认。不会重启。</td>
+</tr>
+<tr>
+<td>on-success</td>
+<td>只有在服务正常退出（return 0）时才重启。</td>
+</tr>
+<tr>
+<td>on-failure</td>
+<td>在程序以任何非正常的方式退出时重启。</td>
+</tr>
+<tr>
+<td>on-abnormal</td>
+<td>只有在被信号终止或超时时，才重启。</td>
+</tr>
+<tr>
+<td>on-abort</td>
+<td>只有在收到没有被捕捉到的信号而终止时，才重启。</td>
+</tr>
+<tr>
+<td>on-watchdog</td>
+<td>只有在超时退出时，才重启。</td>
+</tr>
+<tr>
+<td>always</td>
+<td>不管什么原因，重启就对了。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>各种Exec*字段 - 执行程序</strong></p>
+<p>定义在服务的各个阶段分别执行什么指令，有以下这些：</p>
+<table>
+<thead>
+<tr>
+<th>Exec*</th>
+<th>执行阶段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ExecStart</td>
+<td>启动服务</td>
+</tr>
+<tr>
+<td>ExecReload</td>
+<td>重启服务</td>
+</tr>
+<tr>
+<td>ExecStop</td>
+<td>停止服务</td>
+</tr>
+<tr>
+<td>ExecStartPre</td>
+<td>启动服务前</td>
+</tr>
+<tr>
+<td>ExecStartPost</td>
+<td>启动服务后</td>
+</tr>
+<tr>
+<td>ExecStopPost</td>
+<td>停止服务后</td>
+</tr>
+</tbody>
+</table>
+<h3 id="install"><a class="markdownIt-Anchor" href="#install"></a> [Install]</h3>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[Install]   </span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br></pre></td></tr></table></figure>
+<p><strong>WantedBy</strong><sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
+<p>用于表示服务所属的target，从而配置开机启动。一般常用的只有<code>multi-user.target</code>和<code>graphical.target</code>（依赖于<code>multi-user.target</code>）。</p>
+<h2 id="相关参考"><a class="markdownIt-Anchor" href="#相关参考"></a> 相关参考</h2>
+<hr class="footnotes-sep" />
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>一篇系统性介绍的文章：<a href="https://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-part-two.html" target="_blank" rel="noopener">Systemd 入门教程：实战篇</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>关于<code>After=</code>和<code>Requires=</code>区别的讨论：<a href="https://serverfault.com/questions/812584/in-systemd-whats-the-difference-between-after-and-requires" target="_blank" rel="noopener">In systemd, what’s the difference between After= and Requires=? - Server Fault</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>啥都有的Arch Wiki：<a href="https://wiki.archlinux.org/index.php/Systemd_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)" target="_blank" rel="noopener">systemd (简体中文) - ArchWiki</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>关于simple和forking模式的区别：<a href="https://superuser.com/questions/1274901/systemd-forking-vs-simple/1274913" target="_blank" rel="noopener">redhat enterprise linux - systemd forking vs simple? - Super User</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn5" class="footnote-item"><p>一篇介绍了些参数的文章：<a href="https://www.cnblogs.com/wang-yc/p/8876155.html" target="_blank" rel="noopener">Centos7 自定义systemctl服务脚本</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>AcherStyx
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://acherstyx.github.io/2020/07/07/Systemd%E6%9C%8D%E5%8A%A1%E8%84%9A%E6%9C%AC/" title="Systemd服务脚本">http://acherstyx.github.io/2020/07/07/Systemd服务脚本/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/" rel="prev" title="聊一聊Linux发行版的问题">
+      <i class="fa fa-chevron-left"></i> 聊一聊Linux发行版的问题
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序"><span class="nav-number">1.</span> <span class="nav-text"> 序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路径"><span class="nav-number">2.</span> <span class="nav-text"> 路径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脚本结构"><span class="nav-number">3.</span> <span class="nav-text"> 脚本结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参数字段"><span class="nav-number">4.</span> <span class="nav-text"> 参数字段[1]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#unit"><span class="nav-number">4.1.</span> <span class="nav-text"> [Unit]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#service"><span class="nav-number">4.2.</span> <span class="nav-text"> [Service]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#install"><span class="nav-number">4.3.</span> <span class="nav-text"> [Install]</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关参考"><span class="nav-number">5.</span> <span class="nav-text"> 相关参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="AcherStyx"
+      src="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
+  <p class="site-author-name" itemprop="name">AcherStyx</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AcherStyx" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AcherStyx" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/AcherStyx@gmail.com" title="E-Mail → AcherStyx@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">AcherStyx</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.6' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'neutral',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://acherstyx.github.io/2020/07/07/Systemd%E6%9C%8D%E5%8A%A1%E8%84%9A%E6%9C%AC/',]
+      });
+      });
+  </script>
+
+</body>
+</html>
