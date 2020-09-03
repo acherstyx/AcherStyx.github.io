@@ -20,24 +20,20 @@
     var CONFIG = {"hostname":"acherstyx.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":240,"display":"post","padding":50,"offset":15,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="这篇文章的起因是在Windows下的一次分区操作，结果导致了一段悲伤的故事T^T。 不过这一次的系统崩溃还是有不少收获的：  捡回了我的操作系统。 和Linux双系统时，绝对不要在Windows下进行分区操作。 关于Linux分区丢失之后的找回方法（重要）。 启动问题解决途径。  需要注意的是，这篇文章并非是对这一问题的专业解读，只是一个问题解决的思路的整理（思路&gt;问题解决&gt;放置问题）">
+  <meta name="description" content="引入 近期在处理PCAP格式的网络抓包数据集的时候，在数据集处理方面遇到了不少的问题，主要表现为数据集巨大，有几十GB的大小，由于调试的需要免不了要多次从中提取出数据来进行训练。所以在此简单记录和总结一下其中使用到、学习到的一些处理方法。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Linux系统恢复记录">
-<meta property="og:url" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:title" content="Deep Learning中大数据集加载的技巧摘要">
+<meta property="og:url" content="http://acherstyx.github.io/2020/09/03/Deep-Learning%E4%B8%AD%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E5%8A%A0%E8%BD%BD/index.html">
 <meta property="og:site_name">
-<meta property="og:description" content="这篇文章的起因是在Windows下的一次分区操作，结果导致了一段悲伤的故事T^T。 不过这一次的系统崩溃还是有不少收获的：  捡回了我的操作系统。 和Linux双系统时，绝对不要在Windows下进行分区操作。 关于Linux分区丢失之后的找回方法（重要）。 启动问题解决途径。  需要注意的是，这篇文章并非是对这一问题的专业解读，只是一个问题解决的思路的整理（思路&gt;问题解决&gt;放置问题）">
+<meta property="og:description" content="引入 近期在处理PCAP格式的网络抓包数据集的时候，在数据集处理方面遇到了不少的问题，主要表现为数据集巨大，有几十GB的大小，由于调试的需要免不了要多次从中提取出数据来进行训练。所以在此简单记录和总结一下其中使用到、学习到的一些处理方法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/current-desktop.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/fdisk.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/create_new_disk.png">
-<meta property="article:published_time" content="2020-02-22T01:55:34.000Z">
-<meta property="article:modified_time" content="2020-09-02T08:00:15.673Z">
+<meta property="article:published_time" content="2020-09-03T11:46:27.000Z">
+<meta property="article:modified_time" content="2020-09-03T12:56:21.502Z">
 <meta property="article:author" content="AcherStyx">
-<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Machine Learning">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/current-desktop.png">
 
-<link rel="canonical" href="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/">
+<link rel="canonical" href="http://acherstyx.github.io/2020/09/03/Deep-Learning%E4%B8%AD%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E5%8A%A0%E8%BD%BD/">
 
 
 <script id="page-configurations">
@@ -50,7 +46,7 @@
   };
 </script>
 
-  <title>Linux系统恢复记录 | </title>
+  <title>Deep Learning中大数据集加载的技巧摘要 | </title>
   
 
 
@@ -167,7 +163,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/">
+    <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/09/03/Deep-Learning%E4%B8%AD%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E5%8A%A0%E8%BD%BD/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
@@ -180,7 +176,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Linux系统恢复记录
+          Deep Learning中大数据集加载的技巧摘要
         </h1>
 
         <div class="post-meta">
@@ -189,23 +185,17 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-02-22 09:55:34" itemprop="dateCreated datePublished" datetime="2020-02-22T09:55:34+08:00">2020-02-22</time>
+              <time title="创建时间：2020-09-03 19:46:27 / 修改时间：20:56:21" itemprop="dateCreated datePublished" datetime="2020-09-03T19:46:27+08:00">2020-09-03</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-02 16:00:15" itemprop="dateModified" datetime="2020-09-02T16:00:15+08:00">2020-09-02</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux-%E6%81%A2%E5%A4%8D/" itemprop="url" rel="index"><span itemprop="name">Linux - 恢复</span></a>
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
                 </span>
             </span>
 
@@ -227,61 +217,36 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>这篇文章的起因是在Windows下的一次分区操作，结果导致了一段悲伤的故事T^T。<br />
-不过这一次的系统崩溃还是有不少收获的：</p>
-<ol>
-<li>捡回了我的操作系统。</li>
-<li>和Linux双系统时，绝对不要在Windows下进行分区操作。</li>
-<li>关于Linux分区丢失之后的找回方法（重要）。</li>
-<li>启动问题解决途径。</li>
-</ol>
-<p>需要注意的是，这篇文章并非是对这一问题的专业解读，只是一个问题解决的思路的整理（<strong>思路&gt;问题解决&gt;放置问题</strong>）。</p>
-<p>最终的建议可能是，不要在有双系统的时候，在Windows下进行分区操作，ubuntu的Live CD是个不错的选择，里面一直自带gparted。</p>
+        <h2 id="引入"><a class="markdownIt-Anchor" href="#引入"></a> 引入</h2>
+<p>近期在处理PCAP格式的网络抓包数据集的时候，在数据集处理方面遇到了不少的问题，主要表现为数据集巨大，有几十GB的大小，由于调试的需要免不了要多次从中提取出数据来进行训练。所以在此简单记录和总结一下其中使用到、学习到的一些处理方法。</p>
 <a id="more"></a>
-<p>放张目前的桌面 😄<br />
-估计可以写一篇美化指南了？？Linux的美化是费时费力的，但收获是成正比的。</p>
-<img src="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/current-desktop.png" class="" title="current-desktop">\
-<h2 id="windows分区会导致的问题"><a class="markdownIt-Anchor" href="#windows分区会导致的问题"></a> Windows分区会导致的问题</h2>
-<p>首先，导致问题的根源在于使用Windows下的软件进行了分区（具体是使用了傲梅分区助手），正常情况在Windows环境下使用这个软件是不会有任何问题的，但是关于Linux系统这一面就不是同一回事了。</p>
-<p>由于这一（但不仅限于）分区软件并不识别所有的分区类型，对于Linux下典型的Ext分区是直接不显示的。</p>
-<blockquote>
-<p>直接显示了未分配，视为了空白空间</p>
-</blockquote>
-<p>要导致Linux下分区消失，根据以往经历，笔者猜测出需要满足这两个条件：</p>
-<ol>
-<li>首先就是<strong>分区不显示</strong>，不能识别这一分区。</li>
-</ol>
-<blockquote>
-<p>理由是隔壁的DiskGenius在我装完Linux后装Windows时也进行了分区操作，但是并没有出现问题，此时DiskGenius是识别了的，只是显示未知分类。</p>
-</blockquote>
-<ol start="2">
-<li><strong>对于分区表进行了改动</strong>，出现了分区的创建、格式化成另一种格式，不包含移动分区。</li>
-</ol>
-<blockquote>
-<p>我这一次问题出现的原因就是把一个Fat32格式的分区格式化成了exFat，但同种格式的格式化预估不会有问题。至于移动分区，在之前也用傲梅分区助手移动过两个ESP分区，但是均没有出现问题。</p>
-</blockquote>
-<h3 id="分区编号的重置"><a class="markdownIt-Anchor" href="#分区编号的重置"></a> 分区编号的重置</h3>
-<p>在使用Windows下的分区软件进行分区编辑之后，在Linux这一边都会遇到同样的一个问题：分区编号变了！</p>
-<p>想必有些许了解就会知道，在linux下分区是标成sda1，sda2，……这样的格式的，但是Windows下倒没有遇到这一概念。问题在于Windows下分区后，这些编号会重置，序号会对因它是磁盘内从头开始的第几个分区，可能直接导致Linux下依赖于此的挂载出现问题。所以尽量使用UUID进行区分吧。</p>
-<h3 id="问题的根源猜测"><a class="markdownIt-Anchor" href="#问题的根源猜测"></a> 问题的根源（猜测）</h3>
-<p>基于个人已有的信息，导致分区消失的根本原因因该是Windows下的分区操作导致了分区表被重写了，而那些未被识别的分区，由于软件根本不识别他们，因而直接在重建的时候跳过了这些分区。这也能解释为什么移动没有问题：修改起止的扇区号即可。<br />
-总之这样导致的分区丢失可以概括成：<strong>分区没事，分区表炸了</strong>。这一点还是十分肯定的。</p>
-<hr />
-<h2 id="分区找回"><a class="markdownIt-Anchor" href="#分区找回"></a> 分区找回</h2>
-<p>既然问题的原因在于分区表被改写后，着一分区没有被纳入到分区表，那么可以送一口气的是：数据没事。毕竟数据没有被覆盖写入，就不会有问题。那问题就在于怎么把分区给补回分区表了，这一操作简单便捷，但是倒没找到什么资料，百度也保持着它的传统……</p>
-<h3 id="问题确认"><a class="markdownIt-Anchor" href="#问题确认"></a> 问题确认</h3>
-<p>分区丢失的症状很明显：重启后引导不了，直接进入了Grub，Windows继续活得蛮滋润。<br />
-在Grub命令行下使用基本的命令可以查看到分区，以此确认分区是否丢失。</p>
-<h3 id="分区修复"><a class="markdownIt-Anchor" href="#分区修复"></a> 分区修复</h3>
-<h4 id="step-1-准备一ubuntu镜像"><a class="markdownIt-Anchor" href="#step-1-准备一ubuntu镜像"></a> Step 1. 准备一Ubuntu镜像</h4>
-<p>要修复分区，首先需要准备一个ubuntu镜像。制作过程很简单，基于UEFI的便捷与强大，只需要创建一个Fat32格式的分区然后把镜像内文件全复制进去，在BIOS的启动菜单里就因该能看到这一启动项了，这一步可以参照网上的装Ubuntu的教程。启动后<strong>选择试用（Try xxx!)</strong>，进入下一步。</p>
-<h4 id="step-2-使用fdisk创建分区"><a class="markdownIt-Anchor" href="#step-2-使用fdisk创建分区"></a> Step 2. 使用fdisk创建分区</h4>
-<p>工具使用fdisk，在Ubuntu下是自带的。其实并不限于Ubuntu，能用fdisk即可完成下面的修复。<br />
-下面截图来自于模拟，在这一次的分区丢失中，我的Swap分区也被删除了，就用它的恢复来做一个例子。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo fdisk /dev/nvme0n1</span><br></pre></td></tr></table></figure>
-<img src="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/fdisk.png" class="" title="fdisk">
-<p>之后使用fdisk在原本分区所在的位置重新创建一个分区即可：</p>
-<img src="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/create_new_disk.png" class="" title="create_new_disk">
+<h2 id="选择合适的读取方式"><a class="markdownIt-Anchor" href="#选择合适的读取方式"></a> 选择合适的读取方式</h2>
+<p>库与库之间的体制是不能一概而论的，有的库在加载数据的时候有着先天的劣势，读取同样的数据就是比其他的库要慢。在进行大量数据的读取的时候就不得不考虑使用哪一个库，例如在读取PCAP时，使用scapy就是比dpkg要慢很多，而且从磁盘中读取时速度可能会相差几十倍。类似的，使用某些库进行CSV读取也可以获得更快的速度，甚至更小的内存占用。</p>
+<h2 id="缓存"><a class="markdownIt-Anchor" href="#缓存"></a> 缓存</h2>
+<p>最简单的提升速度的方式是在存在大量IO操作和预处理的数据加载之后，使用某种方式进行缓存。</p>
+<p>最简单的一个实现是使用Python的pickle模块，它可以快速地将一个Python中的基本量序列化到文件中（或者也可以用来序列化后进行网络传输等操作），不过它是Python专有的，其他语言不能读取。另外也可以使用json模块，将Python列表或字典转换成json文件，但是加载速度会比使用pickle慢。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cache_save</span><span class="params">(variable, cache_file)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    create cache for variable using pickle</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    :param variable: variable need to be cached</span></span><br><span class="line"><span class="string">    :param cache_file: path to cache file</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">with</span> open(cache_file, <span class="string">"wb"</span>) <span class="keyword">as</span> f:</span><br><span class="line">            pickle.dump(variable, f, <span class="number">0</span>)</span><br><span class="line">    logger.info(<span class="string">"Cache is saved to %s"</span>, cache_file)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cache_load</span><span class="params">(cache_file)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    recover variable from cache file</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    :param cache_file: path to cache file</span></span><br><span class="line"><span class="string">    :return: recovered variable</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">with</span> open(cache_file, <span class="string">"rb"</span>) <span class="keyword">as</span> f:</span><br><span class="line">        variable = pickle.load(f)</span><br><span class="line">    logger.info(<span class="string">"Cache is loaded from %s"</span>, cache_file)</span><br><span class="line">    <span class="keyword">return</span> variable</span><br></pre></td></tr></table></figure>
+<p>使用缓存时另外一个比较棘手的问题是何时从缓存中加载，而何时从数据集中重新进行读取？</p>
+<p>如果刚对数据集进行了一定的修改，显然应该重新加载一遍数据集，但是如果加载的代码进行了一定的变更呢？如何决定是否需要重新从数据集中加载一遍？这个问题是无法预先回答的，因为很难预测一些更改是否对数据集的加载结果产生了影响。</p>
+<p>比较简单的折衷方案是始终尝试从缓存中读取，而在需要重新建立缓存时手动删除缓存文件；又或者是在代码中添加一个BOOL变量来控制。（总之笔者还没有找到一个一劳永逸的解决方案）前者通常要求尝试检查文件是否存在，因此可以通过一个try_load来完成这一个操作。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cache_try_load</span><span class="params">(cache_file, load_function, *args)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    try to load variable from cache file.</span></span><br><span class="line"><span class="string">    if not exist, call `load_function`.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    :param cache_file:</span></span><br><span class="line"><span class="string">    :param load_function:</span></span><br><span class="line"><span class="string">    :param args:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> cache_load(cache_file)</span><br><span class="line">    <span class="keyword">except</span> FileNotFoundError:</span><br><span class="line">        variable = load_function(*args)</span><br><span class="line">        cache_save(variable, cache_file)</span><br><span class="line">        <span class="keyword">return</span> variable</span><br></pre></td></tr></table></figure>
+<p>使用这样的方法就推荐事先将一项数据的加载过程写成一个函数，以返回值作为加载的结果。</p>
+<h2 id="tfdata中在运行时载入数据"><a class="markdownIt-Anchor" href="#tfdata中在运行时载入数据"></a> tf.data中在运行时载入数据</h2>
+<p>通常学习通过使用<code>tf.data</code>来加载数据集的时候，大都是从自内存中的数据（数组）来构建<code>tf.data.Dataset</code>开始的。这就要求了所有数据一定要事先存在于内存之中，从而会增加内存的占用。</p>
+<p>因此个人觉得在处理一些大数据集的时候就不应该使用<code>tf.data.Dataset.from_tensor_slices</code>或<code>tf.data.Dataset.from_tensors</code>等函数，而应该使用<code>tf.data.Dataset.from_generator</code>这样的函数，使用Python Generator来完成数据集的载入。</p>
+<p>Tensorflow在处理一个通过生成器来创建的数据集时，总是需要读取数据的时候才载入一系列数据（也包括使用shuffle buffer时，会载入预定的数量到内存），而不会读入整个数据集。大部分时候深度学习的数据集都是逐项的，相互之间没有计算关系，所以可以逐项载入。</p>
+<p>不过如果需要综合处理整个数据集的时候使用Generator可能就会遇到一些问题，例如对抓包数据集中的流提取统计信息，就需要持续统计处理才能得到最终的结果。但对于这样的问题，可以通过和上述的缓存配合来解决。可以先进行统计、提取出训练用的特征，逐项存入一个CSV文件中，再通过逐行读入CSV的生成器来加载数据集。</p>
+<h2 id="编码实践中的建议"><a class="markdownIt-Anchor" href="#编码实践中的建议"></a> 编码实践中的建议</h2>
+<p>对于大数据的加载和处理往往比想象中的要复杂、困难许多，有些费时，代码的组织可能成为一个大问题（至少对于笔者最近的开发情况来说）。</p>
+<p>在进行大数据集读取，尤其是同时还需要进行一些数据处理工作的时候，有以下这些建议：</p>
+<ul>
+<li>
+<p><strong>使用通用的、易于扩展的结构</strong>：如果数据集可能出现变动或调整，例如出现数据集替换，或者比较常见的数据集扩展（加入一些自定义的数据集，也许不使用和源数据集一样的保存格式），就需要注意导入的方式一定要具有一定的扩展性，否则之后问题会变得很棘手。</p>
+</li>
+<li>
+<p><strong>分离数据载入、数据处理等步骤</strong>：各个功能的实现不要草草合并在几个函数中，一定要注意各个部分功能的隔离。数据集的读取部分（IO）、处理部分（计算）、最终数据集的导出或者创建一个tf.data.Dataset数据集类，最好进行一定程度的分隔，方便进行替换。这样做的另一个好处是对于每一个部分的处理结果都可以进行缓存，这样如果之前几步没有更改，就可以跳过之前的步骤，从缓存中导入处理结果。另外这么做也有利于增强上一条的通用性、扩展性。</p>
+</li>
+</ul>
 
     </div>
 
@@ -297,7 +262,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/" title="Linux系统恢复记录">http://acherstyx.github.io/2020/02/22/Linux系统恢复记录/</a>
+    <a href="http://acherstyx.github.io/2020/09/03/Deep-Learning%E4%B8%AD%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E5%8A%A0%E8%BD%BD/" title="Deep Learning中大数据集加载的技巧摘要">http://acherstyx.github.io/2020/09/03/Deep-Learning中大数据集的加载/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -309,7 +274,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
+              <a href="/tags/Machine-Learning/" rel="tag"><i class="fa fa-tag"></i> Machine Learning</a>
           </div>
 
         
@@ -318,13 +283,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/02/21/tf-data%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD/" rel="prev" title="tf.data数据加载">
-      <i class="fa fa-chevron-left"></i> tf.data数据加载
+    <a href="/2020/07/07/Systemd%E6%9C%8D%E5%8A%A1%E8%84%9A%E6%9C%AC/" rel="prev" title="Systemd服务脚本">
+      <i class="fa fa-chevron-left"></i> Systemd服务脚本
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="next" title="Btrfs文件系统">
-      Btrfs文件系统 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -383,7 +345,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#windows分区会导致的问题"><span class="nav-number">1.</span> <span class="nav-text"> Windows分区会导致的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分区编号的重置"><span class="nav-number">1.1.</span> <span class="nav-text"> 分区编号的重置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题的根源猜测"><span class="nav-number">1.2.</span> <span class="nav-text"> 问题的根源（猜测）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区找回"><span class="nav-number">2.</span> <span class="nav-text"> 分区找回</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题确认"><span class="nav-number">2.1.</span> <span class="nav-text"> 问题确认</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分区修复"><span class="nav-number">2.2.</span> <span class="nav-text"> 分区修复</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#step-1-准备一ubuntu镜像"><span class="nav-number">2.2.1.</span> <span class="nav-text"> Step 1. 准备一Ubuntu镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#step-2-使用fdisk创建分区"><span class="nav-number">2.2.2.</span> <span class="nav-text"> Step 2. 使用fdisk创建分区</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引入"><span class="nav-number">1.</span> <span class="nav-text"> 引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选择合适的读取方式"><span class="nav-number">2.</span> <span class="nav-text"> 选择合适的读取方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-number">3.</span> <span class="nav-text"> 缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tfdata中在运行时载入数据"><span class="nav-number">4.</span> <span class="nav-text"> tf.data中在运行时载入数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编码实践中的建议"><span class="nav-number">5.</span> <span class="nav-text"> 编码实践中的建议</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -604,7 +566,7 @@ if (document.querySelectorAll('pre.mermaid').length) {
       quicklink({
         timeout : 3000,
         priority: true,
-        ignores : [uri => uri.includes('#'),uri => uri === 'http://acherstyx.github.io/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/',]
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://acherstyx.github.io/2020/09/03/Deep-Learning%E4%B8%AD%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E5%8A%A0%E8%BD%BD/',]
       });
       });
   </script>
