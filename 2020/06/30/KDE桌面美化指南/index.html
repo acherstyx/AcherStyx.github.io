@@ -1,252 +1,257 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en" data-default-color-scheme=&#34;dark&#34;>
+
+
+
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.1">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.png">
+  <link rel="icon" type="image/png" href="/img/avatar.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="">
+  <meta name="author" content="AcherStyx">
+  <meta name="keywords" content="">
+  <title>KDE桌面美化指南 Part 1 - </title>
 
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"acherstyx.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":240,"display":"post","padding":50,"offset":15,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="在经历了Linux环境的持续动荡之后，终于再一次配好了博客的环境。 在系统变更的过程中更迭了多次不同的发行版本，也尝试了许多次的主题美化，最终桌面美化的结果也大致稳定下来。 同时，用了半个学期的Manjaro终究还是有硬件兼容问题，所以重新回归了openSUSE Tumbleweed，正好借重新配置的机会谈一谈KDE下的主题美化，记录下配置过程。 目前Manjaro这边则已经配置完全，用Manja">
-<meta property="og:type" content="article">
-<meta property="og:title" content="KDE桌面美化指南 Part 1">
-<meta property="og:url" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/index.html">
-<meta property="og:site_name">
-<meta property="og:description" content="在经历了Linux环境的持续动荡之后，终于再一次配好了博客的环境。 在系统变更的过程中更迭了多次不同的发行版本，也尝试了许多次的主题美化，最终桌面美化的结果也大致稳定下来。 同时，用了半个学期的Manjaro终究还是有硬件兼容问题，所以重新回归了openSUSE Tumbleweed，正好借重新配置的机会谈一谈KDE下的主题美化，记录下配置过程。 目前Manjaro这边则已经配置完全，用Manja">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/manjaro-final.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/dock-view.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/switch-virtual-desktop.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-init-desktop.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-store.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf-apply.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/gtk-theme.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/la-capitaine.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/McMojave-Circle.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kvantum-install-theme.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kvantum-setting.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/add-widget.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/top-bar-final.png">
-<meta property="og:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/latte-dock-final.png">
-<meta property="article:published_time" content="2020-06-30T02:45:02.000Z">
-<meta property="article:modified_time" content="2020-09-02T08:00:15.665Z">
-<meta property="article:author" content="AcherStyx">
-<meta property="article:tag" content="Linux">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/manjaro-final.png">
-
-<link rel="canonical" href="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
-  <title>KDE桌面美化指南 Part 1 | </title>
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+<link  rel="stylesheet" href="/css/main.css" />
 
-</head>
+<!-- 自定义样式保持在最底部 -->
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"acherstyx.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 50vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>AcherStyx</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
   </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title"></h1>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
-    </div>
-  </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
-
-  </li>
-  </ul>
 </nav>
 
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg_home.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="KDE桌面美化指南 Part 1">
+              
+            </span>
 
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
             
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-06-30 10:45" pubdate>
+        June 30, 2020 am
+      </time>
+    </span>
+  
+</div>
 
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.8k words
+    </span>
+  
+
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> views
+      </span>
     
   
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/">
+</div>
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
-      <meta itemprop="name" content="AcherStyx">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          KDE桌面美化指南 Part 1
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-06-30 10:45:02" itemprop="dateCreated datePublished" datetime="2020-06-30T10:45:02+08:00">2020-06-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-02 16:00:15" itemprop="dateModified" datetime="2020-09-02T16:00:15+08:00">2020-09-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux-Theme/" itemprop="url" rel="index"><span itemprop="name">Linux - Theme</span></a>
-                </span>
-            </span>
+            
+          </div>
 
           
-            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span>
-
         </div>
-      </header>
+      </div>
+    </div>
+  </header>
 
+  <main>
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-        <p>在经历了Linux环境的持续动荡之后，终于再一次配好了博客的环境。<br />
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">KDE桌面美化指南 Part 1</h1>
+            
+              <p class="note note-info">
+                
+                  更新于8 months ago
+                
+              </p>
+            
+            <div class="markdown-body">
+              <p>在经历了Linux环境的持续动荡之后，终于再一次配好了博客的环境。<br />
 在系统变更的过程中更迭了多次不同的发行版本，也尝试了许多次的主题美化，最终桌面美化的结果也大致稳定下来。</p>
 <p>同时，用了半个学期的Manjaro终究还是有硬件兼容问题，所以重新回归了openSUSE Tumbleweed，正好借重新配置的机会谈一谈KDE下的主题美化，记录下配置过程。</p>
 <p>目前Manjaro这边则已经配置完全，用Manjaro的状况来展示下最终的预期效果：</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/manjaro-final.png" class="" title="manjaro-final">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/manjaro-final.png" srcset="/img/loading.gif" class="" title="manjaro-final">
 <a id="more"></a>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/dock-view.png" class="" title="dock-view">
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/switch-virtual-desktop.png" class="" title="switch-virtual-desktop">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/dock-view.png" srcset="/img/loading.gif" class="" title="dock-view">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/switch-virtual-desktop.png" srcset="/img/loading.gif" class="" title="switch-virtual-desktop">
 <h2 id="why-kde"><a class="markdownIt-Anchor" href="#why-kde"></a> Why KDE?</h2>
 <p>国内应为ubuntu的热度一直居高不下，所以很多时候接触的往往是Gnome桌面环境，当然在早一些可能是已经凉凉的Unity（比如我最初接触的就是Unity）。<br />
 之所以选择KDE，主要还是应为以下几个原因：</p>
@@ -256,20 +261,20 @@
 <p>你不知道KDE Connect? 不了解下？<br />
 能衔接上一部分手机的生态，对于改善日常的Linux体验还是有不小的提升的，尤其是需要互发文件的时候。</p>
 <h2 id="初始桌面"><a class="markdownIt-Anchor" href="#初始桌面"></a> 初始桌面</h2>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-init-desktop.png" class="" title="kde-init-desktop">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-init-desktop.png" srcset="/img/loading.gif" class="" title="kde-init-desktop">
 <p>相对来说，openSUSE的初始桌面其实也满不错的～</p>
 <h2 id="kde-store"><a class="markdownIt-Anchor" href="#kde-store"></a> KDE Store</h2>
 <p>首先推荐KDE Store：<a href="https://store.kde.org" target="_blank" rel="noopener">https://store.kde.org</a><br />
 类似的Gnome也有主题站点。</p>
 <p>里面的内容和KDE下各类设置&gt;获取主题中的内容是一致的，从中可以方便地寻找好的主题。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-store.png" class="" title="kde-store">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-store.png" srcset="/img/loading.gif" class="" title="kde-store">
 <h2 id="step-1-主题配置"><a class="markdownIt-Anchor" href="#step-1-主题配置"></a> Step 1. 主题配置</h2>
 <p>KDE设置中即提供了一系列的主题相关的配置，决定了总体的桌面风格，所以第一部即设置好这一系列的配置。以下的配置项如果找不到，只需要在设置&gt;搜索栏搜索即可。</p>
 <h3 id="1-全局主题"><a class="markdownIt-Anchor" href="#1-全局主题"></a> 1. 全局主题</h3>
 <p>全局主题使用<a href="https://github.com/vinceliuice" target="_blank" rel="noopener">vinceliuice</a>的McMojave LAF，这位国人dalao真的作了相当多很赞的主题QwQ。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf.png" class="" title="mocmojave-laf">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf.png" srcset="/img/loading.gif" class="" title="mocmojave-laf">
 <p>比较好的主题普遍都会有黑白两种不同的版本，这个按照个人的喜好选择。个人选择了黑系的主题，应为经常半夜写代码所以白色会觉得刺眼 <code>(ノへ￣、)</code> ，效果如下。全局主题会替换掉下面的Plasma样式、应用样式、颜色、窗口装饰以及图标，算是一个总体的配置方案。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf-apply.png" class="" title="mocmojave-laf-apply">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf-apply.png" srcset="/img/loading.gif" class="" title="mocmojave-laf-apply">
 <p>需要注意的是直接通过设置提供的下载会比较慢，推荐配置好代理再下载。</p>
 <h3 id="2-plasma样式"><a class="markdownIt-Anchor" href="#2-plasma样式"></a> 2. Plasma样式</h3>
 <p>理论上讲，应用了全局主题之后，在设置&gt;Plasma样式中应该已经转变为了McMojave主题。</p>
@@ -278,29 +283,29 @@
 应用样式选择Kvantum-dark，之后会对Kvantum主题进行配置。</p>
 <h3 id="4-gnomegtk-应用程序主题"><a class="markdownIt-Anchor" href="#4-gnomegtk-应用程序主题"></a> 4. GNOME/Gtk 应用程序主题</h3>
 <p>这一个主题主要是影响使用GTK的程序的，KDE是Qt党，所以之前的配置大多只针对Qt有效。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/gtk-theme.png" class="" title="gtk-theme">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/gtk-theme.png" srcset="/img/loading.gif" class="" title="gtk-theme">
 <h3 id="5-图标主题"><a class="markdownIt-Anchor" href="#5-图标主题"></a> 5. 图标主题</h3>
 <p>比较特殊的是只要应用了McMojave这一个全局主题，图标就都空了，可能是它应用的图标主题没安装。</p>
 <p>推荐的图标主题主要有以下几种，当然都可以在设置&gt;图标中联网获取和设置。</p>
 <p><strong>La Capitaine</strong></p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/la-capitaine.png" class="" title="la-capitaine">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/la-capitaine.png" srcset="/img/loading.gif" class="" title="la-capitaine">
 <p><strong>McMojave-circle</strong></p>
 <p>这一个主题的好处是缺失的图标会从numix-circle中继承，这样你只需要同时安装好numix-circle，就可以补全一部分缺失的图标。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/McMojave-Circle.png" class="" title="McMojave-Circle">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/McMojave-Circle.png" srcset="/img/loading.gif" class="" title="McMojave-Circle">
 <h2 id="step-2-设置kvantum"><a class="markdownIt-Anchor" href="#step-2-设置kvantum"></a> Step 2. 设置Kvantum</h2>
 <p>首先安装Kvantum Manager。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo zypper in kvantum-manager kvantum-manager-lang</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">sudo zypper in kvantum-manager kvantum-manager-lang<br></code></pre></div></td></tr></table></figure>
 <p>然后需要安装一个Kvantum主题，这边依旧选择McMojave主题，可以从<a href="https://store.kde.org/p/1304957" target="_blank" rel="noopener">KDE Store下载</a>。</p>
 <p>之后将下载下来的<code>tar.xz</code>压缩包解压，然后打开Kvantum Manager，选择这一个文件夹，安装主题。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kvantum-install-theme.png" class="" title="kvantum-install-theme">
+{% asset_img kvantum-install-theme.png kvantum-install-theme %}
 <p>接着将主题设置为McMojave，开始调整一些主题配置。在 合成&amp;一般外观 里面选择忽略非活动状态，并降低窗口和菜单的透明度，即可获得很好的磨砂效果。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kvantum-setting.png" class="" title="kvantum-setting">
+{% asset_img kvantum-setting.png kvantum-setting %}
 <h2 id="step-3-桌面dock和插件配置"><a class="markdownIt-Anchor" href="#step-3-桌面dock和插件配置"></a> Step 3. 桌面Dock和插件配置</h2>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zypper in latte-dock</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">zypper in latte-dock<br></code></pre></div></td></tr></table></figure>
 <p>目前（写作时）latte-dock的版本还只是0.9，为了获取悬空的效果所以实际安装了从Git源码编译的0.10版本，这一个版本应该不久就会正式发布。</p>
 <p>接下来启动Latte Dock，并设置好它的开机启动（KDE中搜索”自动启动“应用），然后对Latte Dock的外观进行一些配置。</p>
 <p>现在你可以在桌面上 右键&gt;添加部件，来为Latte Dock添加一些小部件，同样的你可以点击下方的按钮联网获取新的小部件。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/add-widget.png" class="" title="add-widget">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/add-widget.png" srcset="/img/loading.gif" class="" title="add-widget">
 <p>latte-dock只需要装一个额外的小部件：</p>
 <ul>
 <li><strong>Latte Seperator</strong>：Latte Dock上分隔用的小横线</li>
@@ -317,9 +322,9 @@
 <li><strong>Event Calendar</strong>：可以同步Google日历。需要设置下时间的格式等，也同时带有类似的天气界面。</li>
 </ul>
 <p>按照以上的配置后的顶栏效果如下：</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/top-bar-final.png" class="" title="top-bar-final">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/top-bar-final.png" srcset="/img/loading.gif" class="" title="top-bar-final">
 <p>接下来对Latte Dock进行配置，把想要的应用拖进取，左边添加一个自带的全屏形式的应用程序面板，右边则添加一个虚拟桌面调度器。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/latte-dock-final.png" class="" title="latte-dock-final">
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/latte-dock-final.png" srcset="/img/loading.gif" class="" title="latte-dock-final">
 <h2 id="小结"><a class="markdownIt-Anchor" href="#小结"></a> 小结</h2>
 <p>以上主要设置了一下整体的主题和Kvantum主题，并添加了一些桌面插件，整理了桌面的外观。<br />
 目前一个大致的主题已经有了，其他还有一些细节的配置，主要还有以下这些：</p>
@@ -339,331 +344,289 @@
 想到这里突然又想继续用之前的Manjaro了<code>(￣ε(#￣)☆╰╮o(￣皿￣///)</code>。</p>
 <p>真的全部配置完还是不容易，所以要好好珍惜系统，远离ubuntu，选用支持Btrfs的系统，特别是openSUSE这样带有业界最好的原生Btrfs快照备份设置的系统，设置好Btrfs备份，并按时做额外的分区备份。<code>（づ￣3￣）づ</code></p>
 
-    </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Linux-Theme/">Linux - Theme</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Linux/">Linux</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">聊一聊Linux发行版的问题</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+                        <span class="hidden-mobile">Btrfs文件系统</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    
-    
-    
-        
-
-<div>
-<ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>AcherStyx
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/" title="KDE桌面美化指南 Part 1">http://acherstyx.github.io/2020/06/30/KDE桌面美化指南/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-
-
-      <footer class="post-footer">
-          
-          <div class="post-tags">
-              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="prev" title="Btrfs文件系统">
-      <i class="fa fa-chevron-left"></i> Btrfs文件系统
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/" rel="next" title="聊一聊Linux发行版的问题">
-      聊一聊Linux发行版的问题 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
+            
+          </article>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#why-kde"><span class="nav-number">1.</span> <span class="nav-text"> Why KDE?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始桌面"><span class="nav-number">2.</span> <span class="nav-text"> 初始桌面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kde-store"><span class="nav-number">3.</span> <span class="nav-text"> KDE Store</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#step-1-主题配置"><span class="nav-number">4.</span> <span class="nav-text"> Step 1. 主题配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-全局主题"><span class="nav-number">4.1.</span> <span class="nav-text"> 1. 全局主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-plasma样式"><span class="nav-number">4.2.</span> <span class="nav-text"> 2. Plasma样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-应用样式"><span class="nav-number">4.3.</span> <span class="nav-text"> 3. 应用样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-gnomegtk-应用程序主题"><span class="nav-number">4.4.</span> <span class="nav-text"> 4. GNOME&#x2F;Gtk 应用程序主题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-图标主题"><span class="nav-number">4.5.</span> <span class="nav-text"> 5. 图标主题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#step-2-设置kvantum"><span class="nav-number">5.</span> <span class="nav-text"> Step 2. 设置Kvantum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#step-3-桌面dock和插件配置"><span class="nav-number">6.</span> <span class="nav-text"> Step 3. 桌面Dock和插件配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">7.</span> <span class="nav-text"> 小结</span></a></li></ol></div>
       </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="AcherStyx"
-      src="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
-  <p class="site-author-name" itemprop="name">AcherStyx</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap motion-element">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">7</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">7</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">2</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/AcherStyx" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AcherStyx" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="/AcherStyx@gmail.com" title="E-Mail → AcherStyx@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
-      </span>
-  </div>
-
-
-
-      </div>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2020</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">AcherStyx</span>
-</div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
-  </div>
-
-        
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
 
-
-
-
-
-
-
-
       </div>
-    </footer>
+    
   </div>
+</div>
 
-  
-  
-  <script color='0,0,255' opacity='0.6' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<!-- Custom -->
 
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-<script src="/js/bookmark.js"></script>
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-if (document.querySelectorAll('pre.mermaid').length) {
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
-    mermaid.initialize({
-      theme    : 'neutral',
-      logLevel : 3,
-      flowchart: { curve     : 'linear' },
-      gantt    : { axisFormat: '%m/%d/%Y' },
-      sequence : { actorMargin: 50 }
-    });
-  }, window.mermaid);
-}
-</script>
-
-
-  
-
-  
-      
-
-<script>
-  if (typeof MathJax === 'undefined') {
-    window.MathJax = {
-      loader: {
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
-      }
-    };
-    (function () {
-      var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    })();
-  } else {
-    MathJax.startup.document.state(0);
-    MathJax.texReset();
-    MathJax.typeset();
-  }
-</script>
 
     
 
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://www.github.com/AcherStyx/" target="_blank" rel="nofollow noopener"><span>AcherStyx</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <span> & </span> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
   
-  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            
+            <span id="busuanzi_value_site_pv"></span>
+             👁
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            
+            <span id="busuanzi_value_site_uv"></span>
+             🐱
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
   <script>
-      window.addEventListener('load', () => {
-      quicklink({
-        timeout : 3000,
-        priority: true,
-        ignores : [uri => uri.includes('#'),uri => uri === 'http://acherstyx.github.io/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/',]
-      });
-      });
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
   </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/mermaid@8.8.3/dist/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
 
 </body>
 </html>

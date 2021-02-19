@@ -1,274 +1,295 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en" data-default-color-scheme=&#34;dark&#34;>
+
+
+
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 4.2.1">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.png">
+  <link rel="icon" type="image/png" href="/img/avatar.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="">
+  <meta name="author" content="AcherStyx">
+  <meta name="keywords" content="">
+  <title>Btrfs文件系统 - </title>
 
-<link rel="stylesheet" href="/css/main.css">
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"acherstyx.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":240,"display":"post","padding":50,"offset":15,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta name="description" content="Btrfs文件系统已经逐渐被各种Linux发行版本支持，虽然其似乎还存在一些小问题（unstable），但是在其各种诱人的功能面前似乎并不那么重要。 由于文件系统事关重大，弄不好容易丢失数据，还是需要熟悉之后再操作，做好额外备份。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Btrfs文件系统">
-<meta property="og:url" content="http://acherstyx.github.io/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/index.html">
-<meta property="og:site_name">
-<meta property="og:description" content="Btrfs文件系统已经逐渐被各种Linux发行版本支持，虽然其似乎还存在一些小问题（unstable），但是在其各种诱人的功能面前似乎并不那么重要。 由于文件系统事关重大，弄不好容易丢失数据，还是需要熟悉之后再操作，做好额外备份。">
-<meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-04-01T02:20:17.000Z">
-<meta property="article:modified_time" content="2020-09-03T11:47:51.222Z">
-<meta property="article:author" content="AcherStyx">
-<meta property="article:tag" content="Linux">
-<meta name="twitter:card" content="summary">
-
-<link rel="canonical" href="http://acherstyx.github.io/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
 
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : false,
-    isPost : true,
-    lang   : 'zh-CN'
-  };
-</script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
 
-  <title>Btrfs文件系统 | </title>
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/atom-one-dark.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
   
 
 
 
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
 
 
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+<link  rel="stylesheet" href="/css/main.css" />
 
-</head>
+<!-- 自定义样式保持在最底部 -->
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
 
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"acherstyx.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":"#"},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 50vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>AcherStyx</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                Links
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
     </div>
   </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title"></h1>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
-    </div>
-  </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
-
-  </li>
-        <li class="menu-item menu-item-categories">
-
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
-
-  </li>
-  </ul>
 </nav>
 
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg_home.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Btrfs文件系统">
+              
+            </span>
 
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-  <div class="reading-progress-bar"></div>
-  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content post posts-expand">
             
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-04-01 10:20" pubdate>
+        April 1, 2020 am
+      </time>
+    </span>
+  
+</div>
 
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.7k words
+    </span>
+  
+
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> views
+      </span>
     
   
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://acherstyx.github.io/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+</div>
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
-      <meta itemprop="name" content="AcherStyx">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          Btrfs文件系统
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-01 10:20:17" itemprop="dateCreated datePublished" datetime="2020-04-01T10:20:17+08:00">2020-04-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-03 19:47:51" itemprop="dateModified" datetime="2020-09-03T19:47:51+08:00">2020-09-03</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux-%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">Linux - 系统</span></a>
-                </span>
-            </span>
+            
+          </div>
 
           
-            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span>
-
         </div>
-      </header>
+      </div>
+    </div>
+  </header>
 
+  <main>
     
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
       
-        <p>Btrfs文件系统已经逐渐被各种Linux发行版本支持，虽然其似乎还存在一些小问题（unstable），但是在其各种诱人的功能面前似乎并不那么重要。<br />
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Btrfs文件系统</h1>
+            
+              <p class="note note-info">
+                
+                  更新于a year ago
+                
+              </p>
+            
+            <div class="markdown-body">
+              <p>Btrfs文件系统已经逐渐被各种Linux发行版本支持，虽然其似乎还存在一些小问题（unstable），但是在其各种诱人的功能面前似乎并不那么重要。<br />
 由于文件系统事关重大，弄不好容易丢失数据，还是需要熟悉之后再操作，做好额外备份。</p>
 <a id="more"></a>
 <h2 id="写时复制"><a class="markdownIt-Anchor" href="#写时复制"></a> 写时复制</h2>
 <p>写时复制（Copy-on-write, CoW）指了在多个调用者请求相同资源时，只有在某个调用者试图修改资源的内容时，系统才会为其复制一份专用副本。这样没有写操作的时候，就不会有多余的副本被创建。<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup><br />
 CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改（updated-in-place）的文件，会导致写入<strong>碎片化</strong>。<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>所以对于这一类数据，不妨建一个子卷然后禁用CoW来储存他们。（别忘了修改<code>fstab</code>）</p>
 <p>Btrfs默认启用写时复制，要停止使用写时复制，使用<code>nodatacow</code>选项，但是这一更改只会影响新创建的文件，对于已有文件（夹）使用下列命令进行修改，但仍存在一些细节问题，使用前务必参见参考资料中关于此节的详细描述<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chattr +C &lt;/path/to/file/or/folder&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">chattr +C &lt;/path/to/file/or/folder&gt;<br></code></pre></div></td></tr></table></figure>
 <h2 id="子卷subvolume"><a class="markdownIt-Anchor" href="#子卷subvolume"></a> 子卷（Subvolume）<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup></h2>
 <p>Btrfs通过Subvolume来实现在备份时排除某些文件夹。</p>
 <h3 id="挂载子卷"><a class="markdownIt-Anchor" href="#挂载子卷"></a> 挂载子卷</h3>
 <p>通过设置挂载的选项可以挂载指定的子卷：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -o subvol=&lt;subvol&gt; &lt;device&gt; &lt;mount_path&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">mount -o subvol=&lt;subvol&gt; &lt;device&gt; &lt;mount_path&gt;<br></code></pre></div></td></tr></table></figure>
 <h3 id="子卷的修改操作"><a class="markdownIt-Anchor" href="#子卷的修改操作"></a> 子卷的修改操作</h3>
 <h4 id="列出子卷"><a class="markdownIt-Anchor" href="#列出子卷"></a> 列出子卷</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">btrfs subvolume list -p path</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">btrfs subvolume list -p path<br></code></pre></div></td></tr></table></figure>
 <p>使用后会列出对应<code>path</code>下的所有子卷，其数量可能会很多，因为所有的快照也以subvolume的形式储存，有意思的是Docker镜像也被保存为了subvolume：</p>
 <h4 id="创建子卷"><a class="markdownIt-Anchor" href="#创建子卷"></a> 创建子卷</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">btrfs subvolume create &lt;/path/to/subvolume&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">btrfs subvolume create &lt;/path/to/subvolume&gt;<br></code></pre></div></td></tr></table></figure>
 <blockquote>
 <p>这里的<code>path</code>指的是子卷的绝对路径，比如当前挂载了<code>@</code>到<code>/mnt/@</code>目录下，则使用路径<code>/mnt/@/home</code>创建出来的子卷为<code>@/home</code>。</p>
 </blockquote>
 <h4 id="删除子卷"><a class="markdownIt-Anchor" href="#删除子卷"></a> 删除子卷</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">btrfs subvolume delete /path/to/subvolume</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">btrfs subvolume delete /path/to/subvolume<br></code></pre></div></td></tr></table></figure>
 <blockquote>
 <p>如果只移除文件目录，而不使用<code>btrfs subvolume delete</code>命令并不会真正删除一个子卷。</p>
 </blockquote>
 <h4 id="默认子卷"><a class="markdownIt-Anchor" href="#默认子卷"></a> 默认子卷</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 获取默认子卷</span></span><br><span class="line">btrfs subvolume get-default /</span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置默认子卷</span></span><br><span class="line">btrfs subvolume set-default &lt;subvolume-id&gt; /</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 获取默认子卷</span><br>btrfs subvolume get-default /<br><span class="hljs-meta">#</span><span class="bash"> 设置默认子卷</span><br>btrfs subvolume set-default &lt;subvolume-id&gt; /<br></code></pre></div></td></tr></table></figure>
 <h4 id="临时挂载"><a class="markdownIt-Anchor" href="#临时挂载"></a> 临时挂载</h4>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 使用路径挂载</span></span><br><span class="line">mount -t btrfs -o subvol=&lt;subvolume&gt; &lt;/mount/point&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用id挂载</span></span><br><span class="line">mount -t btrfs -o subvolid=&lt;id&gt; &lt;/dev/device&gt; &lt;/mount/point&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 使用路径挂载</span><br>mount -t btrfs -o subvol=&lt;subvolume&gt; &lt;/mount/point&gt;<br><span class="hljs-meta">#</span><span class="bash"> 使用id挂载</span><br>mount -t btrfs -o subvolid=&lt;id&gt; &lt;/dev/device&gt; &lt;/mount/point&gt;<br></code></pre></div></td></tr></table></figure>
 <h3 id="btrfs子卷组织形式的探究"><a class="markdownIt-Anchor" href="#btrfs子卷组织形式的探究"></a> Btrfs子卷组织形式的探究<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></h3>
 <p>在openSUSE中查看当前的Btrfs的子卷，可能会显示大量的子卷，因为snapshot实际也是通过子卷来实现的，另外值得注意的是Docker镜像也被作为snapshot独立开了：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">~$ sudo btrfs subvolume list /</span><br><span class="line">ID 256 gen 90 top level 5 path @</span><br><span class="line">ID 257 gen 113574 top level 256 path @/var</span><br><span class="line">...</span><br><span class="line">ID 263 gen 113574 top level 256 path @/home</span><br><span class="line">ID 266 gen 112569 top level 256 path @/.snapshots</span><br><span class="line">ID 298 gen 98293 top level 257 path @/var/lib/docker/btrfs/subvolumes/ce11ad5...    # docker镜像</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">~$ sudo btrfs subvolume list /<br>ID 256 gen 90 top level 5 path @<br>ID 257 gen 113574 top level 256 path @/var<br>...<br>ID 263 gen 113574 top level 256 path @/home<br>ID 266 gen 112569 top level 256 path @/.snapshots<br>ID 298 gen 98293 top level 257 path @/var/lib/docker/btrfs/subvolumes/ce11ad5...    # docker镜像<br>...<br></code></pre></div></td></tr></table></figure>
 <p>其中<code>@</code>代表了文件系统的根（rootfs），但事实上它也仍然是一个snapshot，最顶层的卷是以0为标号的子卷，不过通常不使用。<br />
 同时默认的<code>/</code>同样也不是<code>@</code>子卷，一般也是某一个子卷，只是默认被挂载为了<code>/</code>，通过查看默认子卷可以得知：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">~$ btrfs subvolume get-default /</span><br><span class="line">ID 267 gen 113599 top level 266 path @/.snapshots/1/snapshot  # 一个snapshot被作为默认子卷，挂载为了文件系统的 `/` 目录</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">~$ btrfs subvolume get-default /<br>ID 267 gen 113599 top level 266 path @/.snapshots/1/snapshot  # 一个snapshot被作为默认子卷，挂载为了文件系统的 `/` 目录<br></code></pre></div></td></tr></table></figure>
 <p>可见当前系统的<code>/</code>实际上是一个路径为<code>@/.snapshots/1/snapshot</code>的子卷，真正的<code>@</code>在openSUSE中是隔离开的，作为独立的根来储存需要永久保存的子卷。</p>
 <h3 id="创建子卷的正规步骤"><a class="markdownIt-Anchor" href="#创建子卷的正规步骤"></a> 创建子卷的正规步骤</h3>
 <p>正如上述讨论，由于目前的系统目录也是一个（临时）快照。<br />
 如果我们此时要创建一个子卷，不可以建立在一个一个已有的快照下，否则在进行rollback操作后就不能再删除这个子卷了。正确的操作因该是将这个子卷建立在<code>@</code>子卷下。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo mount /dev/sda2 -o subvol=@ /mnt</span><br><span class="line">sudo btrfs subvolume create /mnt/usr/important</span><br><span class="line">sudo umount /mnt</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">sudo mount /dev/sda2 -o subvol=@ /mnt<br>sudo btrfs subvolume create /mnt/usr/important<br>sudo umount /mnt<br></code></pre></div></td></tr></table></figure>
 <h2 id="快照"><a class="markdownIt-Anchor" href="#快照"></a> 快照</h2>
 <p>Btrfs的快照是建立在其“写时复制”的功能基础上的。<br />
 创建快照可以使用如下命令：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">btrfs subvolume snapshot &lt;/path/to/source&gt; &lt;/path/to/dest&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">btrfs subvolume snapshot &lt;/path/to/source&gt; &lt;/path/to/dest&gt;<br></code></pre></div></td></tr></table></figure>
 <blockquote>
 <p>对于openSUSE，目标目录通常为<code>/.shapshots</code>，这一目录为默认的统一存放快照的目录。<br />
 另外添加参数<code>-r</code>可以创建只读快照，在只读快照上再创建一个快照可以获得只读快照的一个可写版本。</p>
@@ -277,7 +298,7 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
 这也是为什么openSUSE下部分目录被排除在默认的snapper备份之外：它们都被创建为了额外的子卷，由于上述非递归性，他们在对<code>/</code>创建的快照中均被忽略了。</p>
 <h2 id="btrfs启用压缩"><a class="markdownIt-Anchor" href="#btrfs启用压缩"></a> Btrfs启用压缩<sup class="footnote-ref"><a href="#fn6" id="fnref6">[6]</a></sup></h2>
 <p>在openSUSE中是支持Btrfs的压缩功能的，通过<code>mount</code>的参数可以启用压缩：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -o compress &lt;/dev/sdx&gt; &lt;/mount/point&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">mount -o compress &lt;/dev/sdx&gt; &lt;/mount/point&gt;<br></code></pre></div></td></tr></table></figure>
 <p><code>compress</code>的默认规则是：如果你创建了一个文件，Btrfs压缩后发现压缩率低，那对于之后的写入它都不再会进行压缩。如果不希望这样，可以使用<code>compress-force</code>。<br />
 对于已经写入的文件，均不会被压缩，<strong>压缩仅对新写入的文件有效</strong>。</p>
 <p>压缩有三种算法可选：</p>
@@ -287,12 +308,12 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
 <li><strong>zstd</strong>：旧版本内核和<code>GRUB</code>引导对其缺乏支持，暂时忽略。</li>
 </ol>
 <p>在<code>fstab</code>中永久启用压缩，并指定压缩算法（算法以不指定）：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UUID=1a2b3c4d /home btrfs subvol=@/home,compress=lzo  0   0</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">UUID=1a2b3c4d /home btrfs subvol=@/home,compress=lzo  0   0<br></code></pre></div></td></tr></table></figure>
 <h2 id="使用snapper进行管理"><a class="markdownIt-Anchor" href="#使用snapper进行管理"></a> 使用snapper进行管理<sup class="footnote-ref"><a href="#fn7" id="fnref7">[7]</a></sup></h2>
 <p><code>snapper</code>通过一系列的配置来管理Btrfs分区，配置文件默认位于<code>/etc/snapper/configs/</code>下。<br />
 默认的方案只为<code>/</code>创建快照，且内容还要排除名下的子卷。</p>
 <h3 id="创建一个新的配置"><a class="markdownIt-Anchor" href="#创建一个新的配置"></a> 创建一个新的配置</h3>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo snapper -c &lt;config-name&gt; create-config &lt;/path&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">sudo snapper -c &lt;config-name&gt; create-config &lt;/path&gt;<br></code></pre></div></td></tr></table></figure>
 <p>这一操作会创建一个快照并从<code>/etc/snapper/config-templates/default</code>获取一套默认配置。</p>
 <h3 id="配置快照的设置"><a class="markdownIt-Anchor" href="#配置快照的设置"></a> 配置快照的设置</h3>
 <p>见openSUSE<a href="https://documentation.suse.com/zh-cn/sles/12-SP4/html/SLES-all/cha-snapper.html#sec-snapper-config-modify" target="_blank" rel="noopener">相关文档的对应章节</a>，以获得更准确的信息。</p>
@@ -318,331 +339,289 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
 </ol>
 </section>
 
-    </div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Linux-%E7%B3%BB%E7%BB%9F/">Linux - 系统</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Linux/">Linux</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">KDE桌面美化指南 Part 1</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/">
+                        <span class="hidden-mobile">Linux系统恢复记录</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
 
-    
-    
-    
-        
-
-<div>
-<ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>AcherStyx
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="http://acherstyx.github.io/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" title="Btrfs文件系统">http://acherstyx.github.io/2020/04/01/Btrfs文件系统/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-
-
-      <footer class="post-footer">
-          
-          <div class="post-tags">
-              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/" rel="prev" title="Linux系统恢复记录">
-      <i class="fa fa-chevron-left"></i> Linux系统恢复记录
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/" rel="next" title="KDE桌面美化指南 Part 1">
-      KDE桌面美化指南 Part 1 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
-          </div>
-          
-
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
-  }
-</script>
-
+            
+          </article>
         </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#写时复制"><span class="nav-number">1.</span> <span class="nav-text"> 写时复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#子卷subvolume"><span class="nav-number">2.</span> <span class="nav-text"> 子卷（Subvolume）[4]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#挂载子卷"><span class="nav-number">2.1.</span> <span class="nav-text"> 挂载子卷</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子卷的修改操作"><span class="nav-number">2.2.</span> <span class="nav-text"> 子卷的修改操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#列出子卷"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 列出子卷</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建子卷"><span class="nav-number">2.2.2.</span> <span class="nav-text"> 创建子卷</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除子卷"><span class="nav-number">2.2.3.</span> <span class="nav-text"> 删除子卷</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#默认子卷"><span class="nav-number">2.2.4.</span> <span class="nav-text"> 默认子卷</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#临时挂载"><span class="nav-number">2.2.5.</span> <span class="nav-text"> 临时挂载</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#btrfs子卷组织形式的探究"><span class="nav-number">2.3.</span> <span class="nav-text"> Btrfs子卷组织形式的探究[5]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建子卷的正规步骤"><span class="nav-number">2.4.</span> <span class="nav-text"> 创建子卷的正规步骤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快照"><span class="nav-number">3.</span> <span class="nav-text"> 快照</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#btrfs启用压缩"><span class="nav-number">4.</span> <span class="nav-text"> Btrfs启用压缩[6]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用snapper进行管理"><span class="nav-number">5.</span> <span class="nav-text"> 使用snapper进行管理[7]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建一个新的配置"><span class="nav-number">5.1.</span> <span class="nav-text"> 创建一个新的配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置快照的设置"><span class="nav-number">5.2.</span> <span class="nav-text"> 配置快照的设置</span></a></li></ol></li></ol></div>
       </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="AcherStyx"
-      src="https://avatars1.githubusercontent.com/u/34408948?s=460&v=4">
-  <p class="site-author-name" itemprop="name">AcherStyx</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap motion-element">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">7</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">7</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">2</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/AcherStyx" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AcherStyx" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="/AcherStyx@gmail.com" title="E-Mail → AcherStyx@gmail.com"><i class="fa fa-fw fa-envelope"></i></a>
-      </span>
-  </div>
-
-
-
-      </div>
-
     </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2020</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">AcherStyx</span>
-</div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
-  </div>
-
-        
-<div class="busuanzi-count">
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
 
-
-
-
-
-
-
-
       </div>
-    </footer>
+    
   </div>
+</div>
 
-  
-  
-  <script color='0,0,255' opacity='0.6' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<!-- Custom -->
 
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-<script src="/js/bookmark.js"></script>
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-if (document.querySelectorAll('pre.mermaid').length) {
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
-    mermaid.initialize({
-      theme    : 'neutral',
-      logLevel : 3,
-      flowchart: { curve     : 'linear' },
-      gantt    : { axisFormat: '%m/%d/%Y' },
-      sequence : { actorMargin: 50 }
-    });
-  }, window.mermaid);
-}
-</script>
-
-
-  
-
-  
-      
-
-<script>
-  if (typeof MathJax === 'undefined') {
-    window.MathJax = {
-      loader: {
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
-      }
-    };
-    (function () {
-      var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    })();
-  } else {
-    MathJax.startup.document.state(0);
-    MathJax.texReset();
-    MathJax.typeset();
-  }
-</script>
 
     
 
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://www.github.com/AcherStyx/" target="_blank" rel="nofollow noopener"><span>AcherStyx</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <span> & </span> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
   
-  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            
+            <span id="busuanzi_value_site_pv"></span>
+             👁
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            
+            <span id="busuanzi_value_site_uv"></span>
+             🐱
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
   <script>
-      window.addEventListener('load', () => {
-      quicklink({
-        timeout : 3000,
-        priority: true,
-        ignores : [uri => uri.includes('#'),uri => uri === 'http://acherstyx.github.io/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/',]
-      });
-      });
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
   </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/mermaid@8.8.3/dist/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
 
 </body>
 </html>
