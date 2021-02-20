@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="AcherStyx">
   <meta name="keywords" content="">
-  <title>KDE桌面美化指南 Part 1 - </title>
+  <title>KDE桌面美化指南 Part 2 - </title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -174,7 +174,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="KDE桌面美化指南 Part 1">
+            <span class="h2" id="subtitle" title="KDE桌面美化指南 Part 2">
               
             </span>
 
@@ -184,8 +184,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2020-06-30 10:45" pubdate>
-        June 30, 2020 am
+      <time datetime="2021-02-20 22:45" pubdate>
+        February 20, 2021 pm
       </time>
     </span>
   
@@ -196,7 +196,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      1.8k words
+      1.6k words
     </span>
   
 
@@ -235,7 +235,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">KDE桌面美化指南 Part 1</h1>
+            <h1 style="display: none">KDE桌面美化指南 Part 2</h1>
             
               <p class="note note-info">
                 
@@ -244,110 +244,62 @@
               </p>
             
             <div class="markdown-body">
-              <p>在经历了Linux环境的持续动荡之后，终于再一次配好了博客的环境。<br />
-在系统变更的过程中更迭了多次不同的发行版本，也尝试了许多次的主题美化，最终桌面美化的结果也大致稳定下来。</p>
-<p>同时，用了半个学期的Manjaro终究还是有硬件兼容问题，所以重新回归了openSUSE Tumbleweed，正好借重新配置的机会谈一谈KDE下的主题美化，记录下配置过程。</p>
-<p>目前Manjaro这边则已经配置完全，用Manjaro的状况来展示下最终的预期效果：</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/manjaro-final.png" srcset="/img/loading.gif" class="" title="manjaro-final">
-<a id="more"></a>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/dock-view.png" srcset="/img/loading.gif" class="" title="dock-view">
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/switch-virtual-desktop.png" srcset="/img/loading.gif" class="" title="switch-virtual-desktop">
-<h2 id="why-kde"><a class="markdownIt-Anchor" href="#why-kde"></a> Why KDE?</h2>
-<p>国内应为ubuntu的热度一直居高不下，所以很多时候接触的往往是Gnome桌面环境，当然在早一些可能是已经凉凉的Unity（比如我最初接触的就是Unity）。<br />
-之所以选择KDE，主要还是应为以下几个原因：</p>
-<p><strong>1. KDE拥有真正充分的可定制性</strong></p>
-<p>你会发现在Gnome下，一个图标换起来都很麻烦。</p>
-<p><strong>2. KDE Connect太香了</strong></p>
-<p>你不知道KDE Connect? 不了解下？<br />
-能衔接上一部分手机的生态，对于改善日常的Linux体验还是有不小的提升的，尤其是需要互发文件的时候。</p>
-<h2 id="初始桌面"><a class="markdownIt-Anchor" href="#初始桌面"></a> 初始桌面</h2>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-init-desktop.png" srcset="/img/loading.gif" class="" title="kde-init-desktop">
-<p>相对来说，openSUSE的初始桌面其实也满不错的～</p>
-<h2 id="kde-store"><a class="markdownIt-Anchor" href="#kde-store"></a> KDE Store</h2>
-<p>首先推荐KDE Store：<a target="_blank" rel="noopener" href="https://store.kde.org">https://store.kde.org</a><br />
-类似的Gnome也有主题站点。</p>
-<p>里面的内容和KDE下各类设置&gt;获取主题中的内容是一致的，从中可以方便地寻找好的主题。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-store.png" srcset="/img/loading.gif" class="" title="kde-store">
-<h2 id="step-1-主题配置"><a class="markdownIt-Anchor" href="#step-1-主题配置"></a> Step 1. 主题配置</h2>
-<p>KDE设置中即提供了一系列的主题相关的配置，决定了总体的桌面风格，所以第一部即设置好这一系列的配置。以下的配置项如果找不到，只需要在设置&gt;搜索栏搜索即可。</p>
-<h3 id="1-全局主题"><a class="markdownIt-Anchor" href="#1-全局主题"></a> 1. 全局主题</h3>
-<p>全局主题使用<a target="_blank" rel="noopener" href="https://github.com/vinceliuice">vinceliuice</a>的McMojave LAF，这位国人dalao真的作了相当多很赞的主题QwQ。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf.png" srcset="/img/loading.gif" class="" title="mocmojave-laf">
-<p>比较好的主题普遍都会有黑白两种不同的版本，这个按照个人的喜好选择。个人选择了黑系的主题，应为经常半夜写代码所以白色会觉得刺眼 <code>(ノへ￣、)</code> ，效果如下。全局主题会替换掉下面的Plasma样式、应用样式、颜色、窗口装饰以及图标，算是一个总体的配置方案。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf-apply.png" srcset="/img/loading.gif" class="" title="mocmojave-laf-apply">
-<p>需要注意的是直接通过设置提供的下载会比较慢，推荐配置好代理再下载。</p>
-<h3 id="2-plasma样式"><a class="markdownIt-Anchor" href="#2-plasma样式"></a> 2. Plasma样式</h3>
-<p>理论上讲，应用了全局主题之后，在设置&gt;Plasma样式中应该已经转变为了McMojave主题。</p>
-<h3 id="3-应用样式"><a class="markdownIt-Anchor" href="#3-应用样式"></a> 3. 应用样式</h3>
-<p>之前的设置都是正对全局的，比如你的各类菜单，以及你的桌面面板都会受以上的配置影响，而应用样式主要决定应用内的显示效果。<br />
-应用样式选择Kvantum-dark，之后会对Kvantum主题进行配置。</p>
-<h3 id="4-gnomegtk-应用程序主题"><a class="markdownIt-Anchor" href="#4-gnomegtk-应用程序主题"></a> 4. GNOME/Gtk 应用程序主题</h3>
-<p>这一个主题主要是影响使用GTK的程序的，KDE是Qt党，所以之前的配置大多只针对Qt有效。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/gtk-theme.png" srcset="/img/loading.gif" class="" title="gtk-theme">
-<h3 id="5-图标主题"><a class="markdownIt-Anchor" href="#5-图标主题"></a> 5. 图标主题</h3>
-<p>比较特殊的是只要应用了McMojave这一个全局主题，图标就都空了，可能是它应用的图标主题没安装。</p>
-<p>推荐的图标主题主要有以下几种，当然都可以在设置&gt;图标中联网获取和设置。</p>
-<p><strong>La Capitaine</strong></p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/la-capitaine.png" srcset="/img/loading.gif" class="" title="la-capitaine">
-<p><strong>McMojave-circle</strong></p>
-<p>这一个主题的好处是缺失的图标会从numix-circle中继承，这样你只需要同时安装好numix-circle，就可以补全一部分缺失的图标。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/McMojave-Circle.png" srcset="/img/loading.gif" class="" title="McMojave-Circle">
-<h2 id="step-2-设置kvantum"><a class="markdownIt-Anchor" href="#step-2-设置kvantum"></a> Step 2. 设置Kvantum</h2>
-<p>首先安装Kvantum Manager。</p>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">sudo zypper in kvantum-manager kvantum-manager-lang<br></code></pre></div></td></tr></table></figure>
-<p>然后需要安装一个Kvantum主题，这边依旧选择McMojave主题，可以从<a target="_blank" rel="noopener" href="https://store.kde.org/p/1304957">KDE Store下载</a>。</p>
-<p>之后将下载下来的<code>tar.xz</code>压缩包解压，然后打开Kvantum Manager，选择这一个文件夹，安装主题。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kvantum-install.jpg" srcset="/img/loading.gif" class="" title="kvantum安装主题">
-<p>接着将主题设置为McMojave，开始调整一些主题配置。在 合成&amp;一般外观 里面选择忽略非活动状态，并降低窗口和菜单的透明度，即可获得很好的磨砂效果。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kvantum-setting.png" srcset="/img/loading.gif" class="" title="kvantum设置">
-<h2 id="step-3-桌面dock和插件配置"><a class="markdownIt-Anchor" href="#step-3-桌面dock和插件配置"></a> Step 3. 桌面Dock和插件配置</h2>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">zypper in latte-dock<br></code></pre></div></td></tr></table></figure>
-<p>目前（写作时）latte-dock的版本还只是0.9，为了获取悬空的效果所以实际安装了从Git源码编译的0.10版本，这一个版本应该不久就会正式发布。</p>
-<p>接下来启动Latte Dock，并设置好它的开机启动（KDE中搜索”自动启动“应用），然后对Latte Dock的外观进行一些配置。</p>
-<p>现在你可以在桌面上 右键&gt;添加部件，来为Latte Dock添加一些小部件，同样的你可以点击下方的按钮联网获取新的小部件。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/add-widget.png" srcset="/img/loading.gif" class="" title="add-widget">
-<p>latte-dock只需要装一个额外的小部件：</p>
-<ul>
-<li><strong>Latte Seperator</strong>：Latte Dock上分隔用的小横线</li>
-</ul>
-<p>另外的部件都是用于顶栏的，从左到右使用到的小部件分别是：</p>
-<ul>
-<li><strong>Application title</strong>：显示当前的应用名称，推荐改下设置，只显示应用名。</li>
-<li><strong>Window AppMenu Applet</strong>：这一个插件<strong>不能在设置里安装</strong>！需要编译安装，幸运的是openSUSE的软件源中自带了，通过<code>sudo zypper in applet-window-appmenu</code>安装即可。</li>
-<li><strong>颜色拾取器</strong>：自带的。</li>
-<li><strong>Netspeed Widget</strong>：网速显示。</li>
-<li><strong>系统符合查看器</strong>：自带的，不过为了适合主题要改下其设置，调整下颜色方案。</li>
-<li><strong>Weather Widge</strong>：一个UI不错的天气插件，特别是带了磨砂后看起来很赞。需要设置以下地理位置，并且勾上 <code>Appearance&gt;Render meteogram for yr.no</code>，否则雨量的图形会是一片白的背景。</li>
-</ul>
+              <p>距离上次写美化过了好久，又回到了Manjaro（就折腾呗😂）。<br />
+当前KDE已经更新到了5.20，自带的性能监控小插件功能更全也更好看了还多了一些新的插件修复了一些bug然后产生了新的bug，是时候更新下一篇了。</p>
+<p><img src="2021-02-20T225737.png" srcset="/img/loading.gif" alt="2021-02-20T225737" /></p>
+<h2 id="顶栏更新"><a class="markdownIt-Anchor" href="#顶栏更新"></a> 顶栏更新</h2>
+<p>首先是顶栏更新了一下，效果如下。</p>
+<p><img src="2021-02-20T231002.png" srcset="/img/loading.gif" alt="2021-02-20T231002" /></p>
+<p>和之前主要的不同仅在于性能监控使用了KDE更新到5.20后自带的性能监控Widgets，想要监控什么性能指标自己加就行，啥都有，很全很KDE。自行设置了一下样式，怎么配置应该试试就会了吧～（大概）<br />
+另外Weather Widgets的一个天气数据来源<code>yr.no</code>由于站点更新，当前插件已经不支持了，改用<code>OWM</code>吧。</p>
+<h2 id="字体调整"><a class="markdownIt-Anchor" href="#字体调整"></a> 字体调整</h2>
+<p>Linux下字体渲染要比Windows下号很多，所以字号即使比较小看起来效果也比Windows下的大字要舒服些（个人觉得吧），中文字体推荐使用Noto Sans SC，不同的系统下命名可能不同，比如Manjaro下就叫Noto Sans CJK SC。字号稍微调大一些，同时把字体渲染拉满就行，凭个人感觉来。</p>
+<p><img src="2021-02-20T232309.png" srcset="/img/loading.gif" alt="2021-02-20T232309" /></p>
+<p>如果你装系统的时候选的是英文的话（事实上推荐这么做），这个中文字体很可能是缺失的，安装好语言的支持包即可，只要不去改变系统语言就行。或者单独安装Noto Sans字体。</p>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">~$</span><span class="bash"> sudo pacman -Ss noto-fonts</span><br>extra/noto-fonts 20201226-1 [installed]<br>    Google Noto TTF fonts<br>extra/noto-fonts-cjk 20201206-1 [installed]<br>    Google Noto CJK fonts<br>extra/noto-fonts-emoji 20200916-1 [installed]<br>    Google Noto emoji fonts<br>extra/noto-fonts-extra 20201226-1<br>    Google Noto TTF fonts - additional variants<br>community/noto-fonts-compat 20151217-1 [installed]<br>    Google Noto TTF fonts (compat-package)<br></code></pre></div></td></tr></table></figure>
+<p>至于某些应用中，比如Chrome中的字体，在应用自身的设置中是可以调整的，可以独立配置。</p>
+<h2 id="shell相关的配置工作"><a class="markdownIt-Anchor" href="#shell相关的配置工作"></a> Shell相关的配置工作</h2>
+<p>用Linux怎么会少的了用Shell呢。个人来讲更多是通过下拉式的Shell，比如yakuake，对应Gnome下一般就是Guake。毕竟开个Konsole还要多一个窗口，窗口一多就乱了…</p>
+<h3 id="yakuake主题"><a class="markdownIt-Anchor" href="#yakuake主题"></a> Yakuake主题</h3>
+<p>yysy，yakuake就没找到好看的主题QwQ。所以最后是魔改了<code>transparent-tabs</code>这一个主题，一路用到现在，反正只要够简洁就行了，效果如下。</p>
+<p><img src="2021-02-20T234156.png" srcset="/img/loading.gif" alt="2021-02-20T234156" /></p>
+<p>直接把主题中的白边删了，弄成了简单的一条透明的标签栏。<a target="_blank" rel="noopener" href="https://drive.google.com/file/d/1qsMTPaod6x1N6C0_agJh9LKn0BDIJ6dh/view?usp=sharing">下载连接在此</a>。解压后将主题文件夹放到<code>~/.local/share/yakuake/kns_skins/</code>即可，文件夹没有则自行创建。</p>
+<p>Warning: 使用这个主题后，你会发现Yakuake的设置没地方打开了！使用快捷键<code>Ctrl+Shift+,</code>可以打开设置。</p>
+<h3 id="yakuake终端颜色主题"><a class="markdownIt-Anchor" href="#yakuake终端颜色主题"></a> Yakuake终端颜色主题</h3>
+<p>除了Yakuake的边框外观，还有Shell的颜色配置需要设置，不然是没有上面的透明度的。直接在Yakuake终端的空白处<code>右键&gt;Edit Current Profile...&gt;Appearance</code>配置颜色主题，选择一个黑色主题即可，并点<code>Edit</code>拉低其中的透明度即可。</p>
+<p><img src="2021-02-21T002141.png" srcset="/img/loading.gif" alt="2021-02-21T002141" /></p>
+<h3 id="zsh主题和插件"><a class="markdownIt-Anchor" href="#zsh主题和插件"></a> ZSH主题和插件</h3>
+<p>ZSH不必多说吧，反正对于我来说已经习惯成自然了，必须装一个。</p>
+<p>安装了ZSH之后首先装一下Oh My Zsh，安装方法见<a target="_blank" rel="noopener" href="https://ohmyz.sh/#install">官网</a>或者这边：</p>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">sh -c &quot;$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)&quot;<br></code></pre></div></td></tr></table></figure>
+<p>安装后会发现<code>.zshrc</code>更新了。接下来安装下ZSH的主题，配置一下常用的插件即可。主题推荐使用<a target="_blank" rel="noopener" href="https://github.com/romkatv/powerlevel10k">powerlevel10k</a>，因为我们用的是Oh My Zsh，所以安装方法也用Oh My Zsh对应的方法，引用下项目的README中的安装方法：</p>
 <blockquote>
-<p>Warning: <code>yr.no</code>更新了网页之后，<code>Weather Widge</code>插件没有更新，已经废了，推荐使用插件中另一个<code>OWM</code>天气站点。</p>
+<p><strong>Oh My Zsh</strong></p>
+<figure class="highlight awk"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs awk">git clone --depth=<span class="hljs-number">1</span> https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/romkatv/</span>powerlevel10k.git <span class="hljs-variable">$&#123;ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom&#125;</span><span class="hljs-regexp">/themes/</span>powerlevel10k<br></code></pre></div></td></tr></table></figure>
+<p>Users in mainland China can use the official mirror on <a target="_blank" rel="noopener" href="http://gitee.com">gitee.com</a> for faster download.<br />
+中国大陆用户可以使用 <a target="_blank" rel="noopener" href="http://gitee.com">gitee.com</a> 上的官方镜像加速下载.</p>
+<figure class="highlight awk"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs awk">git clone --depth=<span class="hljs-number">1</span> https:<span class="hljs-regexp">//gi</span>tee.com<span class="hljs-regexp">/romkatv/</span>powerlevel10k.git <span class="hljs-variable">$&#123;ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom&#125;</span><span class="hljs-regexp">/themes/</span>powerlevel10k<br></code></pre></div></td></tr></table></figure>
+<p>Set ZSH_THEME=“powerlevel10k/powerlevel10k” in ~/.zshrc.</p>
 </blockquote>
+<p>很贴心给了镜像。简单来讲就是运行给出的指令，然后改一下<code>.zshrc</code>就行了，下一次打开zsh时会跳出主题的一个配置过程，按照指示依次选定想要的样式，最后保存配置，ZSH主题就配置完成了，效果就和上面yakuake截图中一样。</p>
+<p>至于插件，只需要autojump, zsh-autosuggestions和zsh-syntax-highlighting就行，安装方法可以参照另一个博主的<a target="_blank" rel="noopener" href="https://www.zrahh.com/archives/167.html">这篇文章</a>，个人觉得这几个足矣。其中<code>autojump</code>在Linux下的安装不用那么麻烦，而且还可能不见得装的上，manjaro直接从AUR装就可以了，或者<code>archlinuxcn</code>中带了。</p>
+<p>三个ZSh插件功能如下：</p>
 <ul>
-<li><strong>系统托盘</strong>：自带。</li>
-<li><strong>Event Calendar</strong>：可以同步Google日历。需要设置下时间的格式等，也同时带有类似的天气界面。</li>
+<li><strong>autojump</strong> 任何位置使用<code>j xxx</code>即可跳转到对应的目录，而且不用写全目录名称。前提是这个目录之前访问过。</li>
+<li><strong>zsh-autosuggestions</strong> 会记住之前的命令输入历史，在输入命令时自动显示出过去输入过的命令，按右方向键<code>&gt;</code>即可自动填充。</li>
+<li><strong>zsh-syntax-highlighting</strong> 会给输入的命令高亮，输错了的命令会显示成红色。</li>
 </ul>
-<p>按照以上的配置后的顶栏效果如下：</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/top-bar-final.png" srcset="/img/loading.gif" class="" title="top-bar-final">
-<p>接下来对Latte Dock进行配置，把想要的应用拖进取，左边添加一个自带的全屏形式的应用程序面板，右边则添加一个虚拟桌面调度器。</p>
-<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/latte-dock-final.png" srcset="/img/loading.gif" class="" title="latte-dock-final">
-<h2 id="小结"><a class="markdownIt-Anchor" href="#小结"></a> 小结</h2>
-<p>以上主要设置了一下整体的主题和Kvantum主题，并添加了一些桌面插件，整理了桌面的外观。<br />
-目前一个大致的主题已经有了，其他还有一些细节的配置，主要还有以下这些：</p>
-<ul>
-<li>Dolphin的外观</li>
-<li>Yakuake的主题配置</li>
-<li>字体调整</li>
-<li>Fcitx主题调整</li>
-<li>终端主题的配置</li>
-<li>KDE动画效果的调整</li>
-<li>触摸板手势</li>
-<li>应用、桌面、活动切换的配置</li>
-<li>屏幕边缘动作</li>
-<li>…（还差亿点）</li>
-</ul>
-<p>这些就之后再说～<br />
-想到这里突然又想继续用之前的Manjaro了<code>(￣ε(#￣)☆╰╮o(￣皿￣///)</code>。</p>
-<p>真的全部配置完还是不容易，所以要好好珍惜系统，远离ubuntu，选用支持Btrfs的系统，特别是openSUSE这样带有业界最好的原生Btrfs快照备份设置的系统，设置好Btrfs备份，并按时做额外的分区备份。<code>（づ￣3￣）づ</code></p>
+<p>效果如下图：</p>
+<p><img src="2021-02-21T003034.png" srcset="/img/loading.gif" alt="2021-02-21T003034" /></p>
+<h2 id="输入法配置和主题"><a class="markdownIt-Anchor" href="#输入法配置和主题"></a> 输入法配置和主题</h2>
+<p>最后来讲下输入法的问题吧，毕竟打字还是要个中文输入法的。个人使用的是Fcitx，虽然Fcitx 5已经出了，但还是用的4。</p>
+<p>安装就不说了，主题依然是使用了一个魔改后的主题，受害者是Material主题，来源已经不清楚了，应该是从Github上找到。魔改后的效果如下图，附<a target="_blank" rel="noopener" href="https://drive.google.com/file/d/192uBLNoPpNklZr8RbhuOxnrVmIXvvMAu/view?usp=sharing">下载链接</a>，解压后放置到<code>~/.config/fcitx/skin/</code>，然后去Fcitx设置中改主题即可。</p>
+<p><img src="2021-02-21T003807.png" srcset="/img/loading.gif" alt="2021-02-21T003807" /></p>
+<p>至于输入法的配置，个人使用的是LibPinyin，另外在LibPinyin的设置中开了一些模糊音和词库，以及添加了搜狗的细胞词库，总的来说还凑合，词的提示不怎么智能就是了。云拼音建议打开。</p>
+<p>另外，一定要更新Fcitx以及其他的包到新版，旧的版本可能会有问题，比如细胞词库导入不了，或者云拼音出不来等等。</p>
+<hr />
+<p>至此告一段落吧，笔者是个只有兴起才会写写的懒人…<br />
+不过最近更新主题之后，评论功能也开了～</p>
 
             </div>
             <hr>
@@ -378,18 +330,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2020/07/03/%E8%81%8A%E4%B8%80%E8%81%8ALinux%E5%8F%91%E8%A1%8C%E7%89%88%E7%9A%84%E9%97%AE%E9%A2%98/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">聊一聊Linux发行版的问题</span>
-                        <span class="visible-mobile">Previous</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2020/04/01/Btrfs%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
-                        <span class="hidden-mobile">Btrfs文件系统</span>
+                      <a href="/2020/09/03/Deep-Learning%E4%B8%AD%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E5%8A%A0%E8%BD%BD/">
+                        <span class="hidden-mobile">Deep Learning中大数据集加载的技巧摘要</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
