@@ -1,14 +1,14 @@
 
 
 <!DOCTYPE html>
-<html lang="en" data-default-color-scheme=&#34;dark&#34;>
+<html lang="en" data-default-color-scheme=&#34;light&#34;>
 
 
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.png">
-  <link rel="icon" type="image/png" href="/img/avatar.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/hexo.ico">
+  <link rel="icon" type="image/png" href="/img/hexo.ico">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -59,7 +59,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 4.2.1"></head>
+<meta name="generator" content="Hexo 5.3.0"></head>
 
 
 <body>
@@ -277,10 +277,10 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
 <figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 使用路径挂载</span><br>mount -t btrfs -o subvol=&lt;subvolume&gt; &lt;/mount/point&gt;<br><span class="hljs-meta">#</span><span class="bash"> 使用id挂载</span><br>mount -t btrfs -o subvolid=&lt;id&gt; &lt;/dev/device&gt; &lt;/mount/point&gt;<br></code></pre></div></td></tr></table></figure>
 <h3 id="btrfs子卷组织形式的探究"><a class="markdownIt-Anchor" href="#btrfs子卷组织形式的探究"></a> Btrfs子卷组织形式的探究<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></h3>
 <p>在openSUSE中查看当前的Btrfs的子卷，可能会显示大量的子卷，因为snapshot实际也是通过子卷来实现的，另外值得注意的是Docker镜像也被作为snapshot独立开了：</p>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">~$ sudo btrfs subvolume list /<br>ID 256 gen 90 top level 5 path @<br>ID 257 gen 113574 top level 256 path @/var<br>...<br>ID 263 gen 113574 top level 256 path @/home<br>ID 266 gen 112569 top level 256 path @/.snapshots<br>ID 298 gen 98293 top level 257 path @/var/lib/docker/btrfs/subvolumes/ce11ad5...    # docker镜像<br>...<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">~$</span><span class="bash"> sudo btrfs subvolume list /</span><br>ID 256 gen 90 top level 5 path @<br>ID 257 gen 113574 top level 256 path @/var<br>...<br>ID 263 gen 113574 top level 256 path @/home<br>ID 266 gen 112569 top level 256 path @/.snapshots<br>ID 298 gen 98293 top level 257 path @/var/lib/docker/btrfs/subvolumes/ce11ad5...    # docker镜像<br>...<br></code></pre></div></td></tr></table></figure>
 <p>其中<code>@</code>代表了文件系统的根（rootfs），但事实上它也仍然是一个snapshot，最顶层的卷是以0为标号的子卷，不过通常不使用。<br />
 同时默认的<code>/</code>同样也不是<code>@</code>子卷，一般也是某一个子卷，只是默认被挂载为了<code>/</code>，通过查看默认子卷可以得知：</p>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">~$ btrfs subvolume get-default /<br>ID 267 gen 113599 top level 266 path @/.snapshots/1/snapshot  # 一个snapshot被作为默认子卷，挂载为了文件系统的 `/` 目录<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">~$</span><span class="bash"> btrfs subvolume get-default /</span><br>ID 267 gen 113599 top level 266 path @/.snapshots/1/snapshot  # 一个snapshot被作为默认子卷，挂载为了文件系统的 `/` 目录<br></code></pre></div></td></tr></table></figure>
 <p>可见当前系统的<code>/</code>实际上是一个路径为<code>@/.snapshots/1/snapshot</code>的子卷，真正的<code>@</code>在openSUSE中是隔离开的，作为独立的根来储存需要永久保存的子卷。</p>
 <h3 id="创建子卷的正规步骤"><a class="markdownIt-Anchor" href="#创建子卷的正规步骤"></a> 创建子卷的正规步骤</h3>
 <p>正如上述讨论，由于目前的系统目录也是一个（临时）快照。<br />
@@ -316,25 +316,25 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
 <figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">sudo snapper -c &lt;config-name&gt; create-config &lt;/path&gt;<br></code></pre></div></td></tr></table></figure>
 <p>这一操作会创建一个快照并从<code>/etc/snapper/config-templates/default</code>获取一套默认配置。</p>
 <h3 id="配置快照的设置"><a class="markdownIt-Anchor" href="#配置快照的设置"></a> 配置快照的设置</h3>
-<p>见openSUSE<a href="https://documentation.suse.com/zh-cn/sles/12-SP4/html/SLES-all/cha-snapper.html#sec-snapper-config-modify" target="_blank" rel="noopener">相关文档的对应章节</a>，以获得更准确的信息。</p>
+<p>见openSUSE<a target="_blank" rel="noopener" href="https://documentation.suse.com/zh-cn/sles/12-SP4/html/SLES-all/cha-snapper.html#sec-snapper-config-modify">相关文档的对应章节</a>，以获得更准确的信息。</p>
 <p>使用<code>snapper -c home set-config &quot;&lt;KEY&gt;=&lt;value&gt;&quot;</code>来修改设置。</p>
 <!-- footnotes -->
 <hr class="footnotes-sep" />
 <section class="footnotes">
 <ol class="footnotes-list">
-<li id="fn1" class="footnote-item"><p><a href="https://zh.wikipedia.org/wiki/%E5%AF%AB%E5%85%A5%E6%99%82%E8%A4%87%E8%A3%BD" target="_blank" rel="noopener">写入时复制 | 维基百科</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+<li id="fn1" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E5%AF%AB%E5%85%A5%E6%99%82%E8%A4%87%E8%A3%BD">写入时复制 | 维基百科</a> <a href="#fnref1" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn2" class="footnote-item"><p><a href="https://btrfs.wiki.kernel.org/index.php/SysadminGuide#Copy_on_Write_.28CoW.29" target="_blank" rel="noopener">关于CoW的缺点 | SysadminGuide - btrfs Wiki</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+<li id="fn2" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://btrfs.wiki.kernel.org/index.php/SysadminGuide#Copy_on_Write_.28CoW.29">关于CoW的缺点 | SysadminGuide - btrfs Wiki</a> <a href="#fnref2" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn3" class="footnote-item"><p><a href="https://wiki.archlinux.org/index.php/Btrfs_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E5%86%99%E6%97%B6%E5%A4%8D%E5%88%B6_(CoW)" target="_blank" rel="noopener">写时复制 | Btrfs (简体中文) - ArchWiki</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+<li id="fn3" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/index.php/Btrfs_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E5%86%99%E6%97%B6%E5%A4%8D%E5%88%B6_(CoW)">写时复制 | Btrfs (简体中文) - ArchWiki</a> <a href="#fnref3" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn4" class="footnote-item"><p><a href="https://wiki.archlinux.org/index.php/Btrfs_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E5%AD%90%E5%8D%B7" target="_blank" rel="noopener">子卷 | Btrfs (简体中文) - ArchWiki</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+<li id="fn4" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://wiki.archlinux.org/index.php/Btrfs_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)#%E5%AD%90%E5%8D%B7">子卷 | Btrfs (简体中文) - ArchWiki</a> <a href="#fnref4" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn5" class="footnote-item"><p><a href="https://forums.opensuse.org/showthread.php/521277-LEAP-42-2-btrfs-root-filesystem-subvolume-structure" target="_blank" rel="noopener">关于openSUSE上的Btrfs结构的讨论 | LEAP 42.2 btrfs root filesystem subvolume structure</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
+<li id="fn5" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://forums.opensuse.org/showthread.php/521277-LEAP-42-2-btrfs-root-filesystem-subvolume-structure">关于openSUSE上的Btrfs结构的讨论 | LEAP 42.2 btrfs root filesystem subvolume structure</a> <a href="#fnref5" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn6" class="footnote-item"><p><a href="https://en.opensuse.org/SDB:BTRFS#Compressed_btrfs_filesystems" target="_blank" rel="noopener">在挂载时启用压缩功能 | #Compressed btrfs filesystems - SDB:BTRFS - openSUSE Wiki</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
+<li id="fn6" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://en.opensuse.org/SDB:BTRFS#Compressed_btrfs_filesystems">在挂载时启用压缩功能 | #Compressed btrfs filesystems - SDB:BTRFS - openSUSE Wiki</a> <a href="#fnref6" class="footnote-backref">↩︎</a></p>
 </li>
-<li id="fn7" class="footnote-item"><p><a href="https://documentation.suse.com/zh-cn/sles/12-SP4/html/SLES-all/cha-snapper.html#sec-snapper-config" target="_blank" rel="noopener">通过 Snapper 进行系统恢复和快照管理 | 管理指南 | SUSE Linux Enterprise Server 12 SP4</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
+<li id="fn7" class="footnote-item"><p><a target="_blank" rel="noopener" href="https://documentation.suse.com/zh-cn/sles/12-SP4/html/SLES-all/cha-snapper.html#sec-snapper-config">通过 Snapper 进行系统恢复和快照管理 | 管理指南 | SUSE Linux Enterprise Server 12 SP4</a> <a href="#fnref7" class="footnote-backref">↩︎</a></p>
 </li>
 </ol>
 </section>
@@ -361,7 +361,7 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
                 <div class="post-prevnext">
@@ -459,7 +459,7 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
         <span id="busuanzi_container_site_pv" style="display: none">
             
             <span id="busuanzi_value_site_pv"></span>
-             👁
+             👁 (views)
           </span>
       
       
@@ -467,7 +467,7 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
         <span id="busuanzi_container_site_uv" style="display: none">
             
             <span id="busuanzi_value_site_uv"></span>
-             🐱
+             🐱 (people)
           </span>
       
     

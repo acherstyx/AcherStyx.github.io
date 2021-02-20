@@ -1,14 +1,14 @@
 
 
 <!DOCTYPE html>
-<html lang="en" data-default-color-scheme=&#34;dark&#34;>
+<html lang="en" data-default-color-scheme=&#34;light&#34;>
 
 
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.png">
-  <link rel="icon" type="image/png" href="/img/avatar.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/hexo.ico">
+  <link rel="icon" type="image/png" href="/img/hexo.ico">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -59,7 +59,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 4.2.1"></head>
+<meta name="generator" content="Hexo 5.3.0"></head>
 
 
 <body>
@@ -264,14 +264,14 @@
 <img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-init-desktop.png" srcset="/img/loading.gif" class="" title="kde-init-desktop">
 <p>相对来说，openSUSE的初始桌面其实也满不错的～</p>
 <h2 id="kde-store"><a class="markdownIt-Anchor" href="#kde-store"></a> KDE Store</h2>
-<p>首先推荐KDE Store：<a href="https://store.kde.org" target="_blank" rel="noopener">https://store.kde.org</a><br />
+<p>首先推荐KDE Store：<a target="_blank" rel="noopener" href="https://store.kde.org">https://store.kde.org</a><br />
 类似的Gnome也有主题站点。</p>
 <p>里面的内容和KDE下各类设置&gt;获取主题中的内容是一致的，从中可以方便地寻找好的主题。</p>
 <img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kde-store.png" srcset="/img/loading.gif" class="" title="kde-store">
 <h2 id="step-1-主题配置"><a class="markdownIt-Anchor" href="#step-1-主题配置"></a> Step 1. 主题配置</h2>
 <p>KDE设置中即提供了一系列的主题相关的配置，决定了总体的桌面风格，所以第一部即设置好这一系列的配置。以下的配置项如果找不到，只需要在设置&gt;搜索栏搜索即可。</p>
 <h3 id="1-全局主题"><a class="markdownIt-Anchor" href="#1-全局主题"></a> 1. 全局主题</h3>
-<p>全局主题使用<a href="https://github.com/vinceliuice" target="_blank" rel="noopener">vinceliuice</a>的McMojave LAF，这位国人dalao真的作了相当多很赞的主题QwQ。</p>
+<p>全局主题使用<a target="_blank" rel="noopener" href="https://github.com/vinceliuice">vinceliuice</a>的McMojave LAF，这位国人dalao真的作了相当多很赞的主题QwQ。</p>
 <img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf.png" srcset="/img/loading.gif" class="" title="mocmojave-laf">
 <p>比较好的主题普遍都会有黑白两种不同的版本，这个按照个人的喜好选择。个人选择了黑系的主题，应为经常半夜写代码所以白色会觉得刺眼 <code>(ノへ￣、)</code> ，效果如下。全局主题会替换掉下面的Plasma样式、应用样式、颜色、窗口装饰以及图标，算是一个总体的配置方案。</p>
 <img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/mocmojave-laf-apply.png" srcset="/img/loading.gif" class="" title="mocmojave-laf-apply">
@@ -295,11 +295,11 @@
 <h2 id="step-2-设置kvantum"><a class="markdownIt-Anchor" href="#step-2-设置kvantum"></a> Step 2. 设置Kvantum</h2>
 <p>首先安装Kvantum Manager。</p>
 <figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">sudo zypper in kvantum-manager kvantum-manager-lang<br></code></pre></div></td></tr></table></figure>
-<p>然后需要安装一个Kvantum主题，这边依旧选择McMojave主题，可以从<a href="https://store.kde.org/p/1304957" target="_blank" rel="noopener">KDE Store下载</a>。</p>
+<p>然后需要安装一个Kvantum主题，这边依旧选择McMojave主题，可以从<a target="_blank" rel="noopener" href="https://store.kde.org/p/1304957">KDE Store下载</a>。</p>
 <p>之后将下载下来的<code>tar.xz</code>压缩包解压，然后打开Kvantum Manager，选择这一个文件夹，安装主题。</p>
-{% asset_img kvantum-install-theme.png kvantum-install-theme %}
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kvantum-install.jpg" srcset="/img/loading.gif" class="" title="kvantum安装主题">
 <p>接着将主题设置为McMojave，开始调整一些主题配置。在 合成&amp;一般外观 里面选择忽略非活动状态，并降低窗口和菜单的透明度，即可获得很好的磨砂效果。</p>
-{% asset_img kvantum-setting.png kvantum-setting %}
+<img src="/2020/06/30/KDE%E6%A1%8C%E9%9D%A2%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/kvantum-setting.png" srcset="/img/loading.gif" class="" title="kvantum设置">
 <h2 id="step-3-桌面dock和插件配置"><a class="markdownIt-Anchor" href="#step-3-桌面dock和插件配置"></a> Step 3. 桌面Dock和插件配置</h2>
 <figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell">zypper in latte-dock<br></code></pre></div></td></tr></table></figure>
 <p>目前（写作时）latte-dock的版本还只是0.9，为了获取悬空的效果所以实际安装了从Git源码编译的0.10版本，这一个版本应该不久就会正式发布。</p>
@@ -360,13 +360,13 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Linux/">Linux</a>
+                      <a class="hover-with-bg" href="/tags/%E4%B8%BB%E9%A2%98/">主题</a>
                     
                   </div>
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
                 <div class="post-prevnext">
@@ -464,7 +464,7 @@
         <span id="busuanzi_container_site_pv" style="display: none">
             
             <span id="busuanzi_value_site_pv"></span>
-             👁
+             👁 (views)
           </span>
       
       
@@ -472,7 +472,7 @@
         <span id="busuanzi_container_site_uv" style="display: none">
             
             <span id="busuanzi_value_site_uv"></span>
-             🐱
+             🐱 (people)
           </span>
       
     

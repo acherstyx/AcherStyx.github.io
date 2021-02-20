@@ -1,14 +1,14 @@
 
 
 <!DOCTYPE html>
-<html lang="en" data-default-color-scheme=&#34;dark&#34;>
+<html lang="en" data-default-color-scheme=&#34;light&#34;>
 
 
 
 <head>
   <meta charset="UTF-8">
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/avatar.png">
-  <link rel="icon" type="image/png" href="/img/avatar.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/hexo.ico">
+  <link rel="icon" type="image/png" href="/img/hexo.ico">
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -59,7 +59,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 4.2.1"></head>
+<meta name="generator" content="Hexo 5.3.0"></head>
 
 
 <body>
@@ -246,17 +246,17 @@
             <div class="markdown-body">
               <h2 id="引入"><a class="markdownIt-Anchor" href="#引入"></a> 引入</h2>
 <p>近期在处理PCAP格式的网络抓包数据集的时候，在数据集处理方面遇到了不少的问题，主要表现为数据集巨大，有几十GB的大小，由于调试的需要免不了要多次从中提取出数据来进行训练。所以在此简单记录和总结一下其中使用到、学习到的一些处理方法。</p>
-<a id="more"></a>
+<!---more--->
 <h2 id="选择合适的读取方式"><a class="markdownIt-Anchor" href="#选择合适的读取方式"></a> 选择合适的读取方式</h2>
 <p>库与库之间的体制是不能一概而论的，有的库在加载数据的时候有着先天的劣势，读取同样的数据就是比其他的库要慢。在进行大量数据的读取的时候就不得不考虑使用哪一个库，例如在读取PCAP时，使用scapy就是比dpkg要慢很多，而且从磁盘中读取时速度可能会相差几十倍。类似的，使用某些库进行CSV读取也可以获得更快的速度，甚至更小的内存占用。</p>
 <h2 id="缓存"><a class="markdownIt-Anchor" href="#缓存"></a> 缓存</h2>
 <p>最简单的提升速度的方式是在存在大量IO操作和预处理的数据加载之后，使用某种方式进行缓存。</p>
 <p>最简单的一个实现是使用Python的pickle模块，它可以快速地将一个Python中的基本量序列化到文件中（或者也可以用来序列化后进行网络传输等操作），不过它是Python专有的，其他语言不能读取。另外也可以使用json模块，将Python列表或字典转换成json文件，但是加载速度会比使用pickle慢。</p>
-<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cache_save</span><span class="hljs-params">(variable, cache_file)</span>:</span><br>    <span class="hljs-string">"""</span><br><span class="hljs-string">    create cache for variable using pickle</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :param variable: variable need to be cached</span><br><span class="hljs-string">    :param cache_file: path to cache file</span><br><span class="hljs-string">    """</span><br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">with</span> open(cache_file, <span class="hljs-string">"wb"</span>) <span class="hljs-keyword">as</span> f:<br>            pickle.dump(variable, f, <span class="hljs-number">0</span>)<br>    logger.info(<span class="hljs-string">"Cache is saved to %s"</span>, cache_file)<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cache_load</span><span class="hljs-params">(cache_file)</span>:</span><br>    <span class="hljs-string">"""</span><br><span class="hljs-string">    recover variable from cache file</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :param cache_file: path to cache file</span><br><span class="hljs-string">    :return: recovered variable</span><br><span class="hljs-string">    """</span><br>    <span class="hljs-keyword">with</span> open(cache_file, <span class="hljs-string">"rb"</span>) <span class="hljs-keyword">as</span> f:<br>        variable = pickle.load(f)<br>    logger.info(<span class="hljs-string">"Cache is loaded from %s"</span>, cache_file)<br>    <span class="hljs-keyword">return</span> variable<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cache_save</span>(<span class="hljs-params">variable, cache_file</span>):</span><br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    create cache for variable using pickle</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :param variable: variable need to be cached</span><br><span class="hljs-string">    :param cache_file: path to cache file</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(cache_file, <span class="hljs-string">&quot;wb&quot;</span>) <span class="hljs-keyword">as</span> f:<br>            pickle.dump(variable, f, <span class="hljs-number">0</span>)<br>    logger.info(<span class="hljs-string">&quot;Cache is saved to %s&quot;</span>, cache_file)<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cache_load</span>(<span class="hljs-params">cache_file</span>):</span><br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    recover variable from cache file</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :param cache_file: path to cache file</span><br><span class="hljs-string">    :return: recovered variable</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(cache_file, <span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        variable = pickle.load(f)<br>    logger.info(<span class="hljs-string">&quot;Cache is loaded from %s&quot;</span>, cache_file)<br>    <span class="hljs-keyword">return</span> variable<br></code></pre></div></td></tr></table></figure>
 <p>使用缓存时另外一个比较棘手的问题是何时从缓存中加载，而何时从数据集中重新进行读取？</p>
 <p>如果刚对数据集进行了一定的修改，显然应该重新加载一遍数据集，但是如果加载的代码进行了一定的变更呢？如何决定是否需要重新从数据集中加载一遍？这个问题是无法预先回答的，因为很难预测一些更改是否对数据集的加载结果产生了影响。</p>
 <p>比较简单的折衷方案是始终尝试从缓存中读取，而在需要重新建立缓存时手动删除缓存文件；又或者是在代码中添加一个BOOL变量来控制。（总之笔者还没有找到一个一劳永逸的解决方案）前者通常要求尝试检查文件是否存在，因此可以通过一个try_load来完成这一个操作。</p>
-<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cache_try_load</span><span class="hljs-params">(cache_file, load_function, *args)</span>:</span><br>    <span class="hljs-string">"""</span><br><span class="hljs-string">    try to load variable from cache file.</span><br><span class="hljs-string">    if not exist, call `load_function`.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :param cache_file:</span><br><span class="hljs-string">    :param load_function:</span><br><span class="hljs-string">    :param args:</span><br><span class="hljs-string">    :return:</span><br><span class="hljs-string">    """</span><br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">return</span> cache_load(cache_file)<br>    <span class="hljs-keyword">except</span> FileNotFoundError:<br>        variable = load_function(*args)<br>        cache_save(variable, cache_file)<br>        <span class="hljs-keyword">return</span> variable<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs Python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cache_try_load</span>(<span class="hljs-params">cache_file, load_function, *args</span>):</span><br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    try to load variable from cache file.</span><br><span class="hljs-string">    if not exist, call `load_function`.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    :param cache_file:</span><br><span class="hljs-string">    :param load_function:</span><br><span class="hljs-string">    :param args:</span><br><span class="hljs-string">    :return:</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-keyword">return</span> cache_load(cache_file)<br>    <span class="hljs-keyword">except</span> FileNotFoundError:<br>        variable = load_function(*args)<br>        cache_save(variable, cache_file)<br>        <span class="hljs-keyword">return</span> variable<br></code></pre></div></td></tr></table></figure>
 <p>使用这样的方法就推荐事先将一项数据的加载过程写成一个函数，以返回值作为加载的结果。</p>
 <h2 id="tfdata中在运行时载入数据"><a class="markdownIt-Anchor" href="#tfdata中在运行时载入数据"></a> tf.data中在运行时载入数据</h2>
 <p>通常学习通过使用<code>tf.data</code>来加载数据集的时候，大都是从自内存中的数据（数组）来构建<code>tf.data.Dataset</code>开始的。这就要求了所有数据一定要事先存在于内存之中，从而会增加内存的占用。</p>
@@ -297,7 +297,7 @@
                 
               </div>
               
-                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" target="_blank" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
               
               
                 <div class="post-prevnext">
@@ -389,7 +389,7 @@
         <span id="busuanzi_container_site_pv" style="display: none">
             
             <span id="busuanzi_value_site_pv"></span>
-             👁
+             👁 (views)
           </span>
       
       
@@ -397,7 +397,7 @@
         <span id="busuanzi_container_site_uv" style="display: none">
             
             <span id="busuanzi_value_site_uv"></span>
-             🐱
+             🐱 (people)
           </span>
       
     
