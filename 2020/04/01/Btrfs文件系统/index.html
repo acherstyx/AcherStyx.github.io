@@ -59,7 +59,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.3.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -239,14 +239,14 @@
             
               <p class="note note-info">
                 
-                  更新于a year ago
+                  更新于3 years ago
                 
               </p>
             
             <div class="markdown-body">
               <p>Btrfs文件系统已经逐渐被各种Linux发行版本支持，虽然其似乎还存在一些小问题（unstable），但是在其各种诱人的功能面前似乎并不那么重要。<br />
 由于文件系统事关重大，弄不好容易丢失数据，还是需要熟悉之后再操作，做好额外备份。</p>
-<a id="more"></a>
+<span id="more"></span>
 <h2 id="写时复制"><a class="markdownIt-Anchor" href="#写时复制"></a> 写时复制</h2>
 <p>写时复制（Copy-on-write, CoW）指了在多个调用者请求相同资源时，只有在某个调用者试图修改资源的内容时，系统才会为其复制一份专用副本。这样没有写操作的时候，就不会有多余的副本被创建。<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup><br />
 CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改（updated-in-place）的文件，会导致写入<strong>碎片化</strong>。<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>所以对于这一类数据，不妨建一个子卷然后禁用CoW来储存他们。（别忘了修改<code>fstab</code>）</p>
@@ -272,15 +272,15 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
 <p>如果只移除文件目录，而不使用<code>btrfs subvolume delete</code>命令并不会真正删除一个子卷。</p>
 </blockquote>
 <h4 id="默认子卷"><a class="markdownIt-Anchor" href="#默认子卷"></a> 默认子卷</h4>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 获取默认子卷</span><br>btrfs subvolume get-default /<br><span class="hljs-meta">#</span><span class="bash"> 设置默认子卷</span><br>btrfs subvolume set-default &lt;subvolume-id&gt; /<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">获取默认子卷</span><br>btrfs subvolume get-default /<br><span class="hljs-meta prompt_"># </span><span class="language-bash">设置默认子卷</span><br>btrfs subvolume set-default &lt;subvolume-id&gt; /<br></code></pre></div></td></tr></table></figure>
 <h4 id="临时挂载"><a class="markdownIt-Anchor" href="#临时挂载"></a> 临时挂载</h4>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 使用路径挂载</span><br>mount -t btrfs -o subvol=&lt;subvolume&gt; &lt;/mount/point&gt;<br><span class="hljs-meta">#</span><span class="bash"> 使用id挂载</span><br>mount -t btrfs -o subvolid=&lt;id&gt; &lt;/dev/device&gt; &lt;/mount/point&gt;<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">使用路径挂载</span><br>mount -t btrfs -o subvol=&lt;subvolume&gt; &lt;/mount/point&gt;<br><span class="hljs-meta prompt_"># </span><span class="language-bash">使用<span class="hljs-built_in">id</span>挂载</span><br>mount -t btrfs -o subvolid=&lt;id&gt; &lt;/dev/device&gt; &lt;/mount/point&gt;<br></code></pre></div></td></tr></table></figure>
 <h3 id="btrfs子卷组织形式的探究"><a class="markdownIt-Anchor" href="#btrfs子卷组织形式的探究"></a> Btrfs子卷组织形式的探究<sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></h3>
 <p>在openSUSE中查看当前的Btrfs的子卷，可能会显示大量的子卷，因为snapshot实际也是通过子卷来实现的，另外值得注意的是Docker镜像也被作为snapshot独立开了：</p>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">~$</span><span class="bash"> sudo btrfs subvolume list /</span><br>ID 256 gen 90 top level 5 path @<br>ID 257 gen 113574 top level 256 path @/var<br>...<br>ID 263 gen 113574 top level 256 path @/home<br>ID 266 gen 112569 top level 256 path @/.snapshots<br>ID 298 gen 98293 top level 257 path @/var/lib/docker/btrfs/subvolumes/ce11ad5...    # docker镜像<br>...<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_">~$ </span><span class="language-bash">sudo btrfs subvolume list /</span><br>ID 256 gen 90 top level 5 path @<br>ID 257 gen 113574 top level 256 path @/var<br>...<br>ID 263 gen 113574 top level 256 path @/home<br>ID 266 gen 112569 top level 256 path @/.snapshots<br>ID 298 gen 98293 top level 257 path @/var/lib/docker/btrfs/subvolumes/ce11ad5...    # docker镜像<br>...<br></code></pre></div></td></tr></table></figure>
 <p>其中<code>@</code>代表了文件系统的根（rootfs），但事实上它也仍然是一个snapshot，最顶层的卷是以0为标号的子卷，不过通常不使用。<br />
 同时默认的<code>/</code>同样也不是<code>@</code>子卷，一般也是某一个子卷，只是默认被挂载为了<code>/</code>，通过查看默认子卷可以得知：</p>
-<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta">~$</span><span class="bash"> btrfs subvolume get-default /</span><br>ID 267 gen 113599 top level 266 path @/.snapshots/1/snapshot  # 一个snapshot被作为默认子卷，挂载为了文件系统的 `/` 目录<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs shell"><span class="hljs-meta prompt_">~$ </span><span class="language-bash">btrfs subvolume get-default /</span><br>ID 267 gen 113599 top level 266 path @/.snapshots/1/snapshot  # 一个snapshot被作为默认子卷，挂载为了文件系统的 `/` 目录<br></code></pre></div></td></tr></table></figure>
 <p>可见当前系统的<code>/</code>实际上是一个路径为<code>@/.snapshots/1/snapshot</code>的子卷，真正的<code>@</code>在openSUSE中是隔离开的，作为独立的根来储存需要永久保存的子卷。</p>
 <h3 id="创建子卷的正规步骤"><a class="markdownIt-Anchor" href="#创建子卷的正规步骤"></a> 创建子卷的正规步骤</h3>
 <p>正如上述讨论，由于目前的系统目录也是一个（临时）快照。<br />

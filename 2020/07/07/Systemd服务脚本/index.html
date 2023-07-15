@@ -59,7 +59,7 @@
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
-<meta name="generator" content="Hexo 5.3.0"></head>
+<meta name="generator" content="Hexo 5.4.2"></head>
 
 
 <body>
@@ -239,7 +239,7 @@
             
               <p class="note note-info">
                 
-                  更新于7 months ago
+                  更新于3 years ago
                 
               </p>
             
@@ -247,7 +247,7 @@
               <h2 id="序"><a class="markdownIt-Anchor" href="#序"></a> 序</h2>
 <p>现在大多数发行版已经切换到了使用systemd进行服务管理，原本的service已经逐渐被废弃。</p>
 <p>这次来整理下systemd下服务脚本的写法。</p>
-<a id="more"></a>
+<span id="more"></span>
 <h2 id="路径"><a class="markdownIt-Anchor" href="#路径"></a> 路径</h2>
 <p>systemctl的脚本存储在以下两个路径中：</p>
 <ul>
@@ -255,7 +255,7 @@
 <p><code>/usr/lib/systemd/system</code>： 系统服务，运行具有管理员权限。</p>
 </li>
 <li>
-<p><code>/usr/lib/systemd/user</code>：用户服务，只有在用户登陆之后才开始运行。</p>
+<p><code>/usr/lib/systemd/user </code>：用户服务，只有在用户登陆之后才开始运行。</p>
 </li>
 </ul>
 <p>一般自定义的服务都以<code>*.service</code>结尾，存放在<code>/usr/lib/systemd/system</code>中即可，另一个使用比较少。</p>
@@ -266,10 +266,10 @@
 <li><code>[Service]</code>：定义了服务的主要内容（核心）。</li>
 <li><code>[Install]</code>：</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs service">[Unit]<br>...<br><br>[Service]  <br>...<br><br>[Install]   <br>...<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs service">[Unit]<br>...<br><br>[Service]  <br>...<br><br>[Install]   <br>...<br></code></pre></div></td></tr></table></figure>
 <h2 id="参数字段"><a class="markdownIt-Anchor" href="#参数字段"></a> 参数字段<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup></h2>
 <h3 id="unit"><a class="markdownIt-Anchor" href="#unit"></a> [Unit]</h3>
-<figure class="highlight plain"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs service">[Unit]<br>Description&#x3D;test	# 对于服务的说明文本<br>After&#x3D;network.target	# 表示服务需要在哪些服务之后启动<br>Before&#x3D;xxx.service		# 表示服务需要在哪些服务之前启动<br>Requires&#x3D;xxx.service	# 表明服务之间的强依赖关系<br>Wants&#x3D;xxx.service		# 表示服务之间的弱依赖关系<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs service">[Unit]<br>Description=test	# 对于服务的说明文本<br>After=network.target	# 表示服务需要在哪些服务之后启动<br>Before=xxx.service		# 表示服务需要在哪些服务之前启动<br>Requires=xxx.service	# 表明服务之间的强依赖关系<br>Wants=xxx.service		# 表示服务之间的弱依赖关系<br></code></pre></div></td></tr></table></figure>
 <p><strong>Requires - 强依赖</strong></p>
 <p>在当前服务启动的时候，Requires列表下的服务也会被一起启动；如果Requires列表下某一个服务被停止，或者启动失败了，这一个服务也会被同时停止。所以Requires会产生很强的依赖关系。</p>
 <p>Requires不能保证服务之间执行的顺序，当前服务和Requires中的服务可能同时被激活运行。</p>
@@ -303,7 +303,7 @@
 <li>如果在<code>bar.service</code>或<code>foo.service</code>都启动了之后，某一方出现问题终止了，则都不会影响另一方。</li>
 </ol>
 <h3 id="service"><a class="markdownIt-Anchor" href="#service"></a> [Service]</h3>
-<figure class="highlight plain"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs service">[Service]<br>Type&#x3D;forking	# 代表了服务的运行模式<br>User&#x3D;user		# 用户<br>Group&#x3D;user		# 用户组<br>KillMode&#x3D;control-group	# 指定systemd在停止服务时该怎么做<br>PIDFile&#x3D;&#x2F;usr&#x2F;local&#x2F;test&#x2F;test.pid	# 提供pid文件的绝对路径<br>Restart&#x3D;always		# 重启规则<br>RestartSec&#x3D;10		# 重启之前等待的秒数<br>ExecStart&#x3D;&#x2F;usr&#x2F;local&#x2F;test&#x2F;bin&#x2F;startup.sh	# 执行内容<br>PrivateTmp&#x3D;true		# 分配独立的临时空间<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs service">[Service]<br>Type=forking	# 代表了服务的运行模式<br>User=user		# 用户<br>Group=user		# 用户组<br>KillMode=control-group	# 指定systemd在停止服务时该怎么做<br>PIDFile=/usr/local/test/test.pid	# 提供pid文件的绝对路径<br>Restart=always		# 重启规则<br>RestartSec=10		# 重启之前等待的秒数<br>ExecStart=/usr/local/test/bin/startup.sh	# 执行内容<br>PrivateTmp=true		# 分配独立的临时空间<br></code></pre></div></td></tr></table></figure>
 <p><strong>Type - 运行模式</strong><sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup></p>
 <p>运行模式的关键词和效果主要有以下这些：</p>
 <table>
@@ -417,7 +417,7 @@
 </tbody>
 </table>
 <h3 id="install"><a class="markdownIt-Anchor" href="#install"></a> [Install]</h3>
-<figure class="highlight plain"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs service">[Install]   <br>WantedBy&#x3D;multi-user.target<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs service">[Install]   <br>WantedBy=multi-user.target<br></code></pre></div></td></tr></table></figure>
 <p><strong>WantedBy</strong><sup class="footnote-ref"><a href="#fn5" id="fnref5">[5]</a></sup></p>
 <p>用于表示服务所属的target，从而配置开机启动。一般常用的只有<code>multi-user.target</code>和<code>graphical.target</code>（依赖于<code>multi-user.target</code>）。</p>
 <h2 id="相关参考"><a class="markdownIt-Anchor" href="#相关参考"></a> 相关参考</h2>
