@@ -208,8 +208,8 @@
               </p>
             
             <div class="markdown-body">
-              <p>Btrfs文件系统已经逐渐被各种Linux发行版本支持，虽然其似乎还存在一些小问题（unstable），但是在其各种诱人的功能面前似乎并不那么重要。<br />
-由于文件系统事关重大，弄不好容易丢失数据，还是需要熟悉之后再操作，做好额外备份。</p>
+              <p>Btrfs文件系统已经逐渐被各种Linux发行版本支持（作为系统分区格式），Btrfs具备CoW（写时复制）的特性，相比于之前的很多文件系统增添了很多特殊的功能，本文对其中的常用功能进行了介绍。<br />
+但是由于文件系统操作不当容易丢失数据，操作之前记得做好额外备份。</p>
 <span id="more"></span>
 <h2 id="写时复制"><a class="markdownIt-Anchor" href="#写时复制"></a> 写时复制</h2>
 <p>写时复制（Copy-on-write, CoW）指了在多个调用者请求相同资源时，只有在某个调用者试图修改资源的内容时，系统才会为其复制一份专用副本。这样没有写操作的时候，就不会有多余的副本被创建。<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup><br />
@@ -311,7 +311,7 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/Linux-%E7%B3%BB%E7%BB%9F/">Linux - 系统</a>
+                      <a class="hover-with-bg" href="/categories/Linux/">Linux</a>
                     
                   </div>
                 
@@ -341,12 +341,6 @@ CoW的缺点之一在于对于像VM镜像、数据库文件这样的就地更改
                   </article>
                   <article class="post-next col-6">
                     
-                    
-                      <a href="/2020/02/22/Linux%E7%B3%BB%E7%BB%9F%E6%81%A2%E5%A4%8D%E8%AE%B0%E5%BD%95/">
-                        <span class="hidden-mobile">Linux系统恢复记录</span>
-                        <span class="visible-mobile">Next</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
                     
                   </article>
                 </div>
